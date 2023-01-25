@@ -1,7 +1,7 @@
 # Compiling Parallel Symbolic Execution with Continuations (Artifact)
 
-This repository is the artifact for the ICSE 2023 paper "[Compiling Parallel
-Symbolic Execution with Continuations](#)".
+This repository is the artifact for the ICSE 2023 paper *Compiling Parallel
+Symbolic Execution with Continuations*.
 The artifact implements the symbolic-execution compiler
 [GenSym](https://github.com/Generative-Program-Analysis/GenSym) and provides
 instructions and benchmarks to reproduce the empirical experiments reported in
@@ -24,13 +24,17 @@ TODO
 
 ### Build the Docker Image
 
-The script used to build the Docker image can be found from `/icse23/GenSym/docker-image/Dockerfile`
-and `/icse23/GenSym/docker-image/init_script..
-Following this script, one can rebuild the Docker image from scratch.
+The script used to build the Docker image can be found from
+`/icse23/GenSym/docker-image/Dockerfile` and
+`/icse23/GenSym/docker-image/init_script.sh`.
+Following these scripts, one can rebuild the Docker image from scratch by
+running given a tag name:
+```
+$ cd /icse23/GenSym/docker-image
+$ docker build -t <image-tag-name> .
+```
 It is not the necessary for the artifact evaluation to rebuild the image,
 but might be useful for anyone who would like modify or deploy GenSym.
-
-TODO
 
 ## 2. Hardware Requirements
 
@@ -102,12 +106,10 @@ We briefly describe the organization of GenSym's code base, located at `/icse23/
   - `src/main/scala/structure` contains algebraic structure definitions that are used to help high-level functional programming
   - `src/main/scala/utils` contains utilities
   - `src/main/scala/gensym` is the main directory of GenSym's implementation
-    - GenSym implements a few variants of code generation and backends, which are contained in `src/main/scala/engines`. The default and most mature backend is `src/main/scala/engines/ImpCPSEngine.scala` that generates CPS code and uses in-place update when possible.
+    - GenSym implements a few variants staged symbolic interpreters (i.e. compilers), which are contained in `src/main/scala/engines`. The default and most mature compile is `src/main/scala/engines/ImpCPSEngine.scala` that generates CPS code and uses in-place update when possible.
 - `src/test` contains testing infrastructure that are used in Github CI
 
-## 4. Evaluation Instructions
-
-### Kick-the-Tires
+## 4. Kick-the-Tires
 
 **Expected Time: <15 minutes**
 
@@ -129,13 +131,14 @@ Then we run the following command in the `sbt` session to generate models for ex
 ```
 sbt:GenSym> runMain gensym.GenerateExternal
 ```
-We should see `[success]` in the output.
-This generates a C++ file `/icse23/GenSym/headers/gensym/external.hpp`.
 The first time running `sbt` downloads dependencies specified in `build.sbt` and
 compiles the Scala code to JVM bytecode, which may take a few minutes.
+After printing some compilation log, we should see `[success]` in the output.
+(TODO: disable logging)
+This generates a C++ file `/icse23/GenSym/headers/gensym/external.hpp`.
 
-Next, we can use GenSym to compile a simple example program.  The C source is
-the following snippet (stored in `/icse23/GenSym/benchmarks/llvm/branch.c`):
+Next, we can use GenSym to compile a simple example program. We use a C program,
+which is stored in `/icse23/GenSym/benchmarks/llvm/branch.c`:
 
 ```
 int f(int x, int y) {
@@ -148,7 +151,7 @@ int f(int x, int y) {
 ```
 
 Its LLVM IR file can be found in `/icse23/GenSym/benchmarks/llvm/branch.ll`.
-We have mechanized this kick-the-tire process as a test case. We
+We have mechanized this kick-the-tire compilation process as a test case. We
 can run the following command in `sbt` to use GenSym to compile:
 
 ```
@@ -159,12 +162,17 @@ This step invokes GenSym to (1) compile the LLVM IR input to C++ code
 for symbolic execution, (3) compile the C++ code to an executable, and
 (4) run the executable to generate test cases.
 Symbolically executing this program discovers 4 paths, and we expect to see the
-following output from `sbt`:
+following output from `sbt` at the end:
 
 ```
-TODO
+[info] All tests passed.
 ```
 
+This signals the success of the kick-the-tires compilation process.
+The generated C++ program and tests are located in
+`/icse23/GenSym/gs_gen/ImpCPSGS_branch1` for further inspection.
+
+## 4. Evaluation Instructions
 
 ### Benchmarks
 
@@ -227,5 +235,11 @@ table 5
 ## 5. Try Your Own Programs
 
 ### Use GenSym's Interface
+
+It is possible to use GenSym's interface to compile your own programs.
+One way is to run GenSym's main function in `sbt`:
+
+```
+```
 
 ### The Structure of Generated Files
