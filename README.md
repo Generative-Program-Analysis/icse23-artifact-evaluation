@@ -24,7 +24,8 @@ TODO
 
 ### Build the Docker Image
 
-The script used to build the Docker image can be found from [here](#).
+The script used to build the Docker image can be found from `/icse23/GenSym/docker-image/Dockerfile`
+and `/icse23/GenSym/docker-image/init_script..
 Following this script, one can rebuild the Docker image from scratch.
 It is not the necessary for the artifact evaluation to rebuild the image,
 but might be useful for anyone who would like modify or deploy GenSym.
@@ -72,26 +73,22 @@ in contrast to compilation-based tool such as GenSym.
 
 ### Software Dependencies
 
-GenSym itself uses several C++ libraries, including
-
-- Immer (ver?) as the immutable data structure library
-
+GenSym itself uses a few data structures libraries, including
+[immer](https://github.com/arximboldi/immer) and [parallel-hashmap](https://github.com/greg7mdp/parallel-hashmap).
 Other system-wide installed third-party libraries and dependencies used
 in the artifact include
 
-- Z3
-- STP
-- g++
-- LLVM
+- Z3 4.8.12
+- STP 2.3.3
+- g++ 9.10
+- LLVM 11
+- Java Virtual Machine 11
+- Scala 2.12
 - sbt
-- Java Virtual Machine 8
-- Scala 2.10
 
 ### Directory Structure
 
-We briefly describe the organization of GenSym's code base.
-
-In the Docker container,
+We briefly describe the organization of GenSym's code base, located at `/icse23/GenSym` of the Docker image:
 
 - `benchmarks` contains the C source code and makefiles to generate LLVM IRs of them
 - `docker-image` contains scripts to build the docker image
@@ -108,19 +105,66 @@ In the Docker container,
     - GenSym implements a few variants of code generation and backends, which are contained in `src/main/scala/engines`. The default and most mature backend is `src/main/scala/engines/ImpCPSEngine.scala` that generates CPS code and uses in-place update when possible.
 - `src/test` contains testing infrastructure that are used in Github CI
 
-The Docker image also contains additional GNU Coreutils benchmarks.
-
-TODO
-
 ## 4. Evaluation Instructions
 
 ### Kick-the-Tires
 
-**Expected Time: <10 minutes**
+**Expected Time: <15 minutes**
 
-In this step, we make a basic sanity check of the whole compilation pipeline.
-We use the `power` function (Fig. 3 in the paper) as an example program and
-explain the pipeline.
+In this Kick-the-Tires step, we make a basic sanity check of the whole compilation pipeline.
+We use a simple branching program as example and explain the pipeline.
+
+The first preparation step is to generate GenSym's external models.  GenSym
+defines models for external functions in a Scala DSL, which will be generated
+to C++ functions that can be used together with compiled application code.
+To do this, we start an interactive `sbt` session by running
+(`start_sbt` sets necessary parameters for JVM and invokes `sbt`):
+
+```
+# cd /icse23/GenSym
+# ./start_sbt
+```
+
+Then we run the following command in the `sbt` session to generate models for external functions:
+```
+sbt:GenSym> runMain gensym.GenerateExternal
+```
+We should see `[success]` in the output.
+This generates a C++ file `/icse23/GenSym/headers/gensym/external.hpp`.
+The first time running `sbt` downloads dependencies specified in `build.sbt` and
+compiles the Scala code to JVM bytecode, which may take a few minutes.
+
+Next, we can use GenSym to compile a simple example program.  The C source is
+the following snippet (stored in `/icse23/GenSym/benchmarks/llvm/branch.c`):
+
+```
+int f(int x, int y) {
+  if (x <= 0 || y <= 0) return -1;
+  if (x * x + y * y == 25) {
+    return 1;
+  }
+  return 0;
+}
+```
+
+Its LLVM IR file can be found in `/icse23/GenSym/benchmarks/llvm/branch.ll`.
+We have mechanized this kick-the-tire process as a test case. We
+can run the following command in `sbt` to use GenSym to compile:
+
+```
+sbt:GenSym> testOnly icse23.KickTheTires
+```
+
+This step invokes GenSym to (1) compile the LLVM IR input to C++ code
+for symbolic execution, (3) compile the C++ code to an executable, and
+(4) run the executable to generate test cases.
+Symbolically executing this program discovers 4 paths, and we expect to see the
+following output from `sbt`:
+
+```
+TODO
+```
+
 
 ### Benchmarks
 
@@ -182,4 +226,6 @@ table 5
 
 ## 5. Try Your Own Programs
 
+### Use GenSym's Interface
 
+### The Structure of Generated Files
