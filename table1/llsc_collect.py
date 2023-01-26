@@ -14,7 +14,7 @@ filename = "result/{}-{}-{}.log"
 # [22.4488s/22.6989s]#blocks: 12/12; #paths: 720;
 
 for app in apps:
-    for i in N:
+    for i in range(1, int(N)+1):
         with open(filename.format(prefix, app, i)) as f:
             for line in f: pass
             last_line = line

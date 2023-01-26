@@ -292,8 +292,9 @@ is produced by running the program with symbolic execution, which is the next st
 ```
 This steps compiles those benchmarks with LLSC, which generates code under
 `/icse23/llsc/dev-clean/llsc_gen`, and further generate executable files.
-
 The script will also invoke the executable and perform the symbolic execution.
+The execution log and raw timing data are stored in
+`/icse23/icse23-artifact-evaluation/table1/results`.
 
 **Running GenSym**
 
