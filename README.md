@@ -293,11 +293,28 @@ is produced by running the program with symbolic execution, which is the next st
 This steps compiles those benchmarks with LLSC, which generates code under
 `/icse23/llsc/dev-clean/llsc_gen`, and further generate executable files.
 
+The script will also invoke the executable and perform the symbolic execution.
+
 **Running GenSym**
+
+```
+# cd /icse23/icse23-artifact-evaluation/table1
+# bash run_gensym.sh
+```
 
 **Running KLEE**
 
+```
+# cd /icse23/icse23-artifact-evaluation/table1
+# bash run_klee.sh
+```
+
 **Generating Results**
+
+```
+# cd /icse23/icse23-artifact-evaluation/table1
+# bash show_table1.py
+```
 
 ### RQ2
 
