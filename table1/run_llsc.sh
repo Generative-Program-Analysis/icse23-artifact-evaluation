@@ -1,4 +1,4 @@
-cd /icse23/llsc
+cd /icse23/llsc/dev-clean
 
 sbt "runMain sai.llsc.RunLLSC /icse23/GenSym/benchmarks/icse23/algorithms/mergesort_llsc.ll mergeSortTest @main"
 cd llsc_gen/mergeSortTest
