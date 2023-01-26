@@ -1,7 +1,7 @@
 # This script tests LLSC with algorithm benchmarks.
 
-# Change this if need to run mutiple times (default=1)
-N=1
+# Change this if need to run the executable mutiple times
+N=5
 
 # repeat(inputFile, testName)
 run () {
@@ -35,4 +35,4 @@ run "quicksort_llsc.ll" "quicksortTest"
 cd ../..
 
 cd /icse23/icse23-artifact-evaluation/table1
-python llsc_collect.py $N > table1.csv
+python llsc_collect.py $N >> table1.csv

@@ -20,6 +20,8 @@ dependencies and third-party tools installed.
 
 To obtain the Docker image (you may need root privilege to run `docker`):
 
+TODO: update the image tag `dev` -> `icse23`
+
 ```
 $ docker pull guannanwei/gensym:icse23
 ```
@@ -95,8 +97,8 @@ Other system-wide installed third-party libraries and dependencies used
 in the artifact include
 
 - Z3 4.8.12
-- STP 2.3.3
-- g++ 9.10
+- STP (SMTCOMP2020 release)
+- g++ 9.40
 - clang/clang++/LLVM 11
 - Java Virtual Machine 11
 - Scala 2.12
@@ -160,7 +162,6 @@ To do this, we start an interactive `sbt` session by running
 ```
 
 Then we run the following command in the `sbt` session to generate models for external functions
-(**this is also necessary for reproducing experiments RQ{1-6}**):
 
 ```
 sbt:GenSym> runMain gensym.GenerateExternal
@@ -169,8 +170,9 @@ sbt:GenSym> runMain gensym.GenerateExternal
 The first time running `sbt` downloads dependencies specified in `build.sbt` and
 compiles the Scala code to JVM bytecode, which may take a few minutes.
 After printing some compilation log, we should see `[success]` in the output.
-(TODO: disable logging)
 This generates a C++ file `/icse23/GenSym/headers/gensym/external.hpp`.
+
+TODO: disable logging
 
 Next, we can use GenSym to compile a simple example program. We use a C program,
 which is stored in `/icse23/GenSym/benchmarks/llvm/branch.c`:
@@ -319,6 +321,8 @@ The execution log and raw timing data are stored in
 
 ### RQ2
 
+TODO: make sure  runMain gensym.GenerateExternal is executed first
+
 **Expected Time:**
 
 table 2
@@ -356,6 +360,10 @@ It is possible to use GenSym's interface to compile your own programs.
 One way is to run GenSym's main function in `sbt`:
 
 ```
+sbt:GenSym> runMain gensym.RunGenSym <arguments>
 ```
+
+Running `runMain gensym.RunGenSym --help` prints the help message
+and
 
 ### The Structure of Generated Files
