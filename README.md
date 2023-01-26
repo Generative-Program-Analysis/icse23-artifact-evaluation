@@ -1,11 +1,13 @@
 # Compiling Parallel Symbolic Execution with Continuations (Artifact)
 
-This repository is the artifact for the ICSE 2023 paper *Compiling Parallel
-Symbolic Execution with Continuations*.
+This document is the instruction for the ICSE 2023 artifact evaluation for
+paper *Compiling Parallel Symbolic Execution with Continuations*.
 The artifact implements the symbolic-execution compiler
 [GenSym](https://github.com/Generative-Program-Analysis/GenSym) and provides
 instructions and benchmarks to reproduce the empirical experiments reported in
 the paper.
+
+This document is also available online at https://github.com/Generative-Program-Analysis/icse23-artifact-evaluation.
 
 Authors: Guannan Wei, Songlin Jia, Ruiqi Gao, Haotian Deng, Shangyin Tan, Oliver Bračevac, Tiark Rompf
 
@@ -16,15 +18,37 @@ TODO: TOC
 The artifact is available as a pre-built Docker image, which has all
 dependencies and third-party tools installed.
 
-To obtain the Docker image:
+To obtain the Docker image (you may need root privilege to run `docker`):
 
 ```
-TODO
+$ docker pull guannanwei/gensym:icse23
 ```
+
+### Start the Docker Container
+
+Then to instantiate the Docker image, run the following command:
+
+```
+docker run --name <container_name> --ulimit='stack=-1:-1' -it guannanwei/gensym:icse23 bash
+```
+
+Then we should be able to see the prompt of `bash`.
+All experiments are conducted within the Docker container.
+
+In case there are up-stream changes of the artifact, once the container is
+started you can run the following command:
+```
+# cd /icse23
+# bash sync.sh
+```
+to pull those changes.
+
+Once running inside the Docker, you can also find this document
+at `/icse23/icse23-artifact-evaluation/README.md`.
 
 ### Build the Docker Image
 
-The script used to build the Docker image can be found from
+The scripts used to build the Docker image can be found from
 `/icse23/GenSym/docker-image/Dockerfile` and
 `/icse23/GenSym/docker-image/init_script.sh`.
 Following these scripts, one can rebuild the Docker image from scratch by
@@ -33,26 +57,10 @@ running given a tag name:
 $ cd /icse23/GenSym/docker-image
 $ docker build -t <image-tag-name> .
 ```
-It is not the necessary for the artifact evaluation to rebuild the image,
-but might be useful for anyone who would like modify or deploy GenSym.
+It is *not* necessary for the artifact evaluation to rebuild the image,
+but might be useful for anyone who would like to reuse or deploy GenSym.
 
-## 2. Hardware Requirements
-
-The artifact evaluation involves running parallel symbolic execution, therefore we
-recommend using a machine with at least 16 physical cores and 32GB of memory.
-The artifact only supports x86-64 architecture running Linux-based operating
-systems.
-
-To obtain accurate performance numbers and minimize interference, the evaluation
-process also requires exclusive use of the machine.
-
-Note: The experiment result reported in the paper is obtained from a machine
-with 96 physical cores (192 physical+logical cores) and 3TB memory (although we
-will not use that much memory). Different hardware environment may result in
-numbers with different characteristics, but we expect the trend/ratio to be
-similar.
-
-## 3. Artifact Overview
+## 2. Artifact Overview
 
 The Docker image runs Ubuntu 20.04 and contains [GenSym at the `icse23` branch](#),
 the [LLSC at the `fse21demo` branch](#), and
@@ -77,15 +85,19 @@ in contrast to compilation-based tool such as GenSym.
 
 ### Software Dependencies
 
-GenSym itself uses a few data structures libraries, including
-[immer](https://github.com/arximboldi/immer) and [parallel-hashmap](https://github.com/greg7mdp/parallel-hashmap).
+The GenSym compiler relies on the Lightweight Modular Staging (LMS) framework
+(`/icse23/GenSym/third-party/lms-clean`). Other Scala dependencies and their
+versions are specified in `/icse23/GenSym/build.sbt`.
+GenSym's backend uses a few C++ data structures libraries, including
+[immer](https://github.com/arximboldi/immer) and [parallel-hashmap](https://github.com/greg7mdp/parallel-hashmap) (exact version dependencies specified in `.gitmodules`).
+
 Other system-wide installed third-party libraries and dependencies used
 in the artifact include
 
 - Z3 4.8.12
 - STP 2.3.3
 - g++ 9.10
-- LLVM 11
+- clang/clang++/LLVM 11
 - Java Virtual Machine 11
 - Scala 2.12
 - sbt
@@ -109,16 +121,36 @@ We briefly describe the organization of GenSym's code base, located at `/icse23/
     - GenSym implements a few variants staged symbolic interpreters (i.e. compilers), which are contained in `src/main/scala/engines`. The default and most mature compile is `src/main/scala/engines/ImpCPSEngine.scala` that generates CPS code and uses in-place update when possible.
 - `src/test` contains testing infrastructure that are used in Github CI
 
+## 3. Hardware Requirements
+
+The artifact evaluation involves running parallel symbolic execution, therefore we
+recommend using a machine with at least 16 physical cores and 32GB of memory.
+The artifact only supports x86-64 architecture running Linux-based operating
+systems.
+
+To obtain accurate performance numbers and minimize interference, the evaluation
+process also requires exclusive use of the machine.
+
+Note: The experiment result reported in the paper is obtained from a machine
+with 96 physical cores (192 physical+logical cores) and 3TB memory (although we
+will not use that much memory). Different hardware environment may result in
+numbers with different characteristics, but we expect the trend/ratio to be
+similar.
+
+
 ## 4. Kick-the-Tires
 
-**Expected Time: <15 minutes**
+**Expected Time: 15 minutes**
 
 In this Kick-the-Tires step, we make a basic sanity check of the whole compilation pipeline.
 We use a simple branching program as example and explain the pipeline.
 
-The first preparation step is to generate GenSym's external models.  GenSym
-defines models for external functions in a Scala DSL, which will be generated
-to C++ functions that can be used together with compiled application code.
+The first preparation step is to generate GenSym's external models.
+These models simulate symbolic behaviors of external functions, such as
+the POSIX file system.
+GenSym defines models for external functions in a Scala DSL, which will be
+generated to C++ functions that can be used together with the compiled
+application code.
 To do this, we start an interactive `sbt` session by running
 (`start_sbt` sets necessary parameters for JVM and invokes `sbt`):
 
@@ -127,10 +159,13 @@ To do this, we start an interactive `sbt` session by running
 # ./start_sbt
 ```
 
-Then we run the following command in the `sbt` session to generate models for external functions:
+Then we run the following command in the `sbt` session to generate models for external functions
+(**this is also necessary for reproducing experiments RQ{1-6}**):
+
 ```
 sbt:GenSym> runMain gensym.GenerateExternal
 ```
+
 The first time running `sbt` downloads dependencies specified in `build.sbt` and
 compiles the Scala code to JVM bytecode, which may take a few minutes.
 After printing some compilation log, we should see `[success]` in the output.
@@ -172,34 +207,97 @@ This signals the success of the kick-the-tires compilation process.
 The generated C++ program and tests are located in
 `/icse23/GenSym/gs_gen/ImpCPSGS_branch1` for further inspection.
 
-## 4. Evaluation Instructions
-
-### Benchmarks
+## 4. Benchmarks Description
 
 The paper uses two groups of benchmarks: (1) algorithm programs with finite
-numbers of paths, and (2) a subset of GNU Coreutils programs that have interaction
+numbers of paths, and (2) a subset of GNU Coreutils (v8.32) programs that have interaction
 with OS file system and command line interface.
 
+We use the algorithm benchmarks in Table I, whose C source code and LLVM IR can
+be found in `/icse23/GenSym/benchmarks/icse23/algorithms`.
+
+We use the Coreutils benchmarks in the rest of experiments, including Table {II,
+III, IV, V}.
+Their LLVM IR can be found in `/icse23/GenSym/benchmarks/icse23/coreutils`.
+The C source code of Coreutils are not included in the artifact, but can
+be found publiclly at `git://git.sv.gnu.org/coreutils`.
+The generation of Coreutils LLVM IR from their C source code is not
+part of the artifact, but can be found in a [separate document](https://github.com/Generative-Program-Analysis/coreutils-testing-instruction) we
+prepared.
+
 Further more, these Coreutils benchmarks can be used with different input
-configurations.  The paper uses two configurations: (1) short-running
+configurations. The paper uses two configurations: (1) *short-running*
 configurations that have smaller number of symbolic inputs and can be
-symbolically executed in a few minutes, and (2) long-running
+symbolically executed in a few minutes, and (2) *long-running*
 configurations that have more number of symbolic inputs and take much
 longer time to test.
 
-We use the algorithm benchmarks in Table I, whose C source code and LLVM IR
-can be found in `TODO`.
+Both GenSym and KLEE can finish the short-running configuration benchmarks,
+and they explore the same set of paths. Therefore we can compare the performance
+based on the same workload.
+The long-running configuration benchmarks are used to evaluate the scalability.
+Both engines time out at 1 hour, and then we can compare the throughput,
+i.e. the number of paths they explore per second (assuming that paths are homogeneous).
 
-The short-running benchmark configuration of Coreutils programs
-are used in Table II, TODO
+More specifically, the long-running configuration of Coreutils programs
+are used in the *lower part* of Table II for RQ2.
+All other experiments including the upper part of Table II, Table III, Table IV, and Table V
+all uses the short-running configuration.
 
-We use the long-running configuration in TODO
+## 5. Evaluation Instructions
 
 ### RQ1
 
-**Expected Time:**
+**Expected Time: 30 minutes**
 
-table 1
+This experiment answers RQ1 and generates Table I of the paper.  We will first
+examine the benchmarks, and then run the experiment using LLSC, GenSym, and
+KLEE, and finally generate the digested results.
+
+**Examining Benchmarks**
+
+The set of benchmarks for RQ1 are located in `/icse23/GenSym/benchmarks/icse23/algorithms`.
+Both C source code and LLVM IR of them are already included.
+The `.ll` files are used by GenSym and LLSC, and `.bc` files are used for KLEE, since
+they link with different engine-specific APIs.
+A `Makefile` is accompanied with these benchmarks, so a suer can modify the program
+and produce different test cases using the same process.
+
+- To show the LOC of C source code ("C LOC" column in Table I):
+
+```
+# cd /icse23/GenSym/benchmarks/icse23/algorithms
+# cloc --by-file *.c
+```
+
+- To show the LOC of LLVM IR code ("LLVM LOC" column in Table I):
+
+```
+# wc -l *.ll
+```
+
+- The number of symbolic inputs (i.e. the "#Sym Args" column in Table I) are
+annotated in the C source file. Using `bubblesort.c` as an example, the program
+initializes `SIZE` symbolic variables using engine-specific APIs, which is 6 in
+this case.
+
+- The number of paths of each benchmark program (i.e. the "#Paths" column in Table I)
+is produced by running the program with symbolic execution, which is the next step.
+
+**Running LLSC**
+
+```
+# cd /icse23/icse23-artifact-evaluation/table1
+# bash run_llsc.sh
+```
+This steps compiles those benchmarks with LLSC, which generates code under
+`/icse23/llsc/dev-clean/llsc_gen`, and further generate executable files.
+
+**Running GenSym**
+
+**Running KLEE**
+
+**Generating Results**
 
 ### RQ2
 
@@ -232,7 +330,7 @@ table 5
 
 table 5
 
-## 5. Try Your Own Programs
+## 6. Try Your Own Programs
 
 ### Use GenSym's Interface
 
