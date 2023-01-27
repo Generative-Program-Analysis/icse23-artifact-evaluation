@@ -28,6 +28,7 @@ p.add_argument('--exclude', action='store', nargs='+', default=('false',))
 p = subparsers.add_parser('format')
 p.set_defaults(task_format=True)
 p.add_argument('restart_json', action='store', type=Path)
+p.add_argument('--output-tex', action='store', type=Path)
 argv = vars(parser.parse_args())
 
 
@@ -47,6 +48,9 @@ class StopWatch:
 cur = Path().resolve()
 ll_dir = argv['ir_files'].resolve()
 make_parallel = ['make', '-j', str(argv['make_cores'])]
+
+
+# preparation: build the libraries
 
 gs_launcher = "java -Xms4G -Xmx32G -Xss1024M -XX:MaxMetaspaceSize=8G -XX:ReservedCodeCacheSize=2048M -jar".split()
 if argv.get('require_gs'):
@@ -100,6 +104,8 @@ if argv.get('task_format'):
         timings, cachemap = [], {}
 
 
+# execution: run the experiments
+
 if argv.get('task_run'):
     repeat_num, applist = argv['repeat_num'], []
     gs_args = "--engine=app --use-argv --main-opt=O3".split()
@@ -115,7 +121,7 @@ if argv.get('task_run'):
                     arglist.append([*gs_args, *noopt, f'--lib={libpath}', f'--output={binname}', item])
 
     try:  # finally: dump to restart
-        if arglist:
+        if arglist:  # execute scala generation tasks
             repeat_arg = ','.join(str(len(i)) for i in arglist)
             repeat_arg = f'--repeat={repeat_num},{repeat_arg}'
             args = sum(arglist, start=[*gs_launcher, repeat_arg])
@@ -131,12 +137,14 @@ if argv.get('task_run'):
         for item in applist:
             cwd = cur / 'gs_gen' / item
 
+            # collect LOC info
             if cachemap.get((item, 'cloc'), 0) < 1:
                 p = subp.run('cloc .'.split(), check=True, capture_output=True, text=True, cwd=cwd)
                 cloc, = [l.split()[-1] for l in p.stdout.splitlines() if l.startswith('C++')]
                 timings.append([item, 'cloc', int(cloc)])
                 print(timings[-1])
 
+            # collect c++ build time
             if cachemap.get((item, 'cpp'), 0) < repeat_num:
                 t_cpp = StopWatch()
                 for n in range(repeat_num):
@@ -146,6 +154,7 @@ if argv.get('task_run'):
                     timings.append([item, 'cpp', t_cpp()])
                     print(timings[-1])
 
+            # collect running time
             if cachemap.get((item, 'exec'), 0) < repeat_num:
                 binopts = program_arg[item.split('_')[0]]
                 args = [f'./{item}', *general_args, f'--argv=./{item} {binopts}']
@@ -156,11 +165,13 @@ if argv.get('task_run'):
                     timings.append([item, 'exec', t_exec()])
                     print(timings[-1])
 
-    finally:
+    finally:  # dump to restart
         if restartfile:
             with restartfile.open('w') as f:
                 json.dump(timings, f, indent=2)
 
+
+# format: generate Table V from data
 
 colnames = r'\textbf{$T^\woopt_\scala$} & \textbf{$T^\woopt_\cpp$} & \textbf{$T^\wopt_\scala$} & \textbf{$T^\wopt_\cpp$} & Code Size & \textbf{$T_\text{exec}$}'.split(' & ')
 if argv.get('task_format'):
@@ -185,5 +196,9 @@ if argv.get('task_format'):
         ('cloc', 'o/n'): lambda x: f'{(x[0] / x[1] - 1):.2%}'.replace('%', '\%'),
         ('exec', 'o/n'): lambda x: f'{(x[0] / x[1] - 1):.2%}'.replace('%', '\%'),
     }
-    print(pv2.to_latex(header=colnames, escape=False, index_names=False,
-        formatters=formatters, float_format='{:.2f}'.format, column_format='ccccccc'))
+    text = pv2.to_latex(header=colnames, escape=False, index_names=False,
+        formatters=formatters, float_format='{:.2f}'.format, column_format='ccccccc')
+    if output_tex := argv.get('output_tex'):
+        with output_tex.open('w') as f:
+            print(text, file=f)
+    print(text)
