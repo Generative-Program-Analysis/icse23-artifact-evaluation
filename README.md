@@ -423,7 +423,12 @@ The most important options include,
 - `--exclude <app> ...`, specifying the applications not to include in the
   benchmark, separated by a whitespace, defaulting to `false` only.
 
-The number reported in the paper uses 96 cores in this step, and testing each
+To get a quick run of this experiment just for `base32`, you may use the
+following command assuming you have a 16-core/32GB-memory machine:
+
+    /icse23/icse23-artifact-evaluation/table5/compilation_test.py --make-cores 8 run --repeat-num 1 --exclude ???
+
+The numbers reported in the paper uses 96 cores in this step, and testing each
 application for one iteration takes roughly around 200 seconds, where there are
 15 applications available for testing.
 By the end of the benchmark, a LaTeX table will be printed on screen, containing
