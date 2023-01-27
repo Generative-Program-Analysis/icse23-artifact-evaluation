@@ -205,7 +205,7 @@ following output from `sbt` at the end:
 ```
 
 This signals the success of the kick-the-tires compilation process.
-The generated C++ program and tests are located in
+Then we can exit sbt.  The generated C++ program and tests are located in
 `/icse23/GenSym/gs_gen/ImpCPSGS_branch1` for further inspection.
 
 ## 4. Benchmarks Description
@@ -337,9 +337,19 @@ table 2
 
 ### RQ3
 
+TODO: mention this in RQ2
+The process of compiling generated C++ programs to executable uses half of the
+CPU cores (both physical and logical) by default.
+If you only have 32GB memory, limiting the the number of parallel `g++` instances
+no more than 8 is a good choice.
+If you still experience out-of-memory in Docker, please try to decrease the
+number of CPU cores.
+With more memory, you may increase the number of parallel `g++` instances.
+
 **Expected Time:**
 
 table 3
+This experiment evaluates the performance of GemSym's parallel execution (Table III).
 
 numactl
 
@@ -351,38 +361,45 @@ table 4
 
 ### RQ5 and RQ6
 
-**Expected Time: ~5 hours in 96-core parallel**
+**Expected Time: ~5 hours (in 96-core parallel)**
 
 This part of the artifact aims to answer RQ5 and RQ6 by producing Table V. By
-compiling the applications in `/icse/GenSym/benchmarks/coreutils/separate` in
-separate compilation mode both with and without optimizations, we are able to
-reason about the compilation cost and the effectiveness of our compile-time
-optimizations. Before starting, change the directory to `GenSym`'s root folder,
+compiling the benchmarks in `/icse/GenSym/benchmarks/coreutils/separate` in both
+with and without optimizations, we are able to examine about the compilation
+cost and the effectiveness of our compile-time optimizations.
+This step is performed under separate compilation mode of GenSym: we compile the
+POSIX/uClibc library and Coreutils benchmarks separately and then link them
+together.
+Before starting, change the directory to `GenSym`'s root folder,
 
     cd /icse23/GenSym
 
-#### Preparation
+**Preparation**
 
-Preparing libraries for separate compilation resembles the steps compilng an
-application. First, we use GenSym to generate code in C++, and second, we
-build the C++ code. In the docker image, the first step has been baked in to
-save your time. To reproduce this step yourself, you may use (be careful this
-step can take more than 3 hours),
+Preparing libraries for separate compilation resembles the steps compiling an
+whole-program application. First, we use GenSym to generate code in C++, and second, we
+compile the C++ code to executables. In the docker image, the first step has
+been baked in to save your time; therefore it is *not* necessary to do it for the artifact
+evaluation. To reproduce this step yourself, you may use (this may take more than 3
+hours depending on your machine),
 
     /icse23/icse23-artifact-evaluation/table5/compilation_test.py prepare --no-build
 
-With the C++ code generated, the next step is to build them. You should run the
-following command. You can specify `--make-cores <cores>` to limit the resources
-consumed. This step can take about >10hrs by a single thread, around 10 minutes
-in our fully paralleled setting (96 physical cores, 192 threads).
+With the C++ code generated, the next step is to generate the executable file, which is
+*necessary* for the rest evaluation.
+You should run the following command. You can specify `--make-cores <cores>` to
+limit the CPU cores consumed. This step can take about >10 hours by a single
+thread, around 10 minutes in our fully paralleled setting (96 physical cores):
 
     /icse23/icse23-artifact-evaluation/table5/compilation_test.py [--make-cores <cores>] prepare --no-codegen
 
-To do all the preparation from scratch at once, you may use,
+To perform all the preparation steps from scratch at once (again this is not
+necessary for the artifact evaluation since the first step has been done), you
+may use,
 
     /icse23/icse23-artifact-evaluation/table5/compilation_test.py [--make-cores <cores>] prepare
 
-#### Execution
+**Execution**
 
 After preparing the libraries, we can start the compilation benchmark. The
 benchmark script will compile each application twice, with and without
@@ -392,7 +409,7 @@ recorded,
 - the time generating the C++ code,
 - the size (LOC) of generated C++ code, measured by `cloc`.
 - the time building the C++ code in parallel, and
-- the time executing the built application with the configuration in Table II.
+- the time executing the built application with the configuration in Table II (upper part).
 
 The command we are using in this step is,
 
@@ -400,17 +417,18 @@ The command we are using in this step is,
 
 The most important options include,
 
-- `--make-cores <cores>`, setting the cores used by parallel making,
-- `--repeat-num <num>`, setting the repeatition of each step in the measurement,
+- `--make-cores <cores>`, setting the cores used by parallel g++ compilation,
+- `--repeat-num <num>`, setting the number of repetition for each step in the measurement,
   defaulting to 5, and
 - `--exclude <app> ...`, specifying the applications not to include in the
-  benchmark, separated by blankspace, defaulting to `false` only.
+  benchmark, separated by a whitespace, defaulting to `false` only.
 
-In a fully paralleled settings (>= 96 cores), testing each application for one
-iteration takes roughly around 200 seconds, where there are 15 applications
-available for testing. By the end of the benchmark, a LaTeX table will be
-printed on screen, containing the results to Table V in the paper. All reported
-numbers are based on the median of all repeatitions.
+The number reported in the paper uses 96 cores in this step, and testing each
+application for one iteration takes roughly around 200 seconds, where there are
+15 applications available for testing.
+By the end of the benchmark, a LaTeX table will be printed on screen, containing
+the results to Table V in the paper. All reported numbers are based on the
+median of all repetitions.
 
 ## 6. Try Your Own Programs
 
