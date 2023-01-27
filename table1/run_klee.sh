@@ -12,7 +12,7 @@
 
 mkdir -p /icse23/icse23-artifact-evaluation/table1/result
 
-N=1
+N=5
 
 prefix=/icse23/icse23-artifact-evaluation/table1/result/klee-
 
