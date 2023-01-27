@@ -410,7 +410,8 @@ The most important options include,
 In a fully paralleled settings (>= 96 cores), testing each application for one
 iteration takes roughly around 200 seconds, where there are 15 applications
 available for testing. By the end of the benchmark, a LaTeX table will be
-printed on screen, containing the results to Table V in the paper.
+printed on screen, containing the results to Table V in the paper. All reported
+numbers are based on the median of all repeatitions.
 
 ## 6. Try Your Own Programs
 
