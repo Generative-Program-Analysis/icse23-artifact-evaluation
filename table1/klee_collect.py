@@ -14,7 +14,7 @@ csv_filename = "result/{}-{}-{}.csv"
 for i in range(0, 6):
     filename = filenames[i]
     app = apps[i]
-    with open(log_filename.format(prefix, filename, 0)) as f:
+    with open(log_filename.format(prefix, filename, 1)) as f:
         # get last line and extract the number of path
         for line in f: pass
         last_line = line
