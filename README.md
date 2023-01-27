@@ -304,6 +304,11 @@ The execution log and raw timing data are stored in
 # cd /icse23/icse23-artifact-evaluation/table1
 # bash run_gensym.sh
 ```
+This steps compiles those benchmarks with GenSym, which generates code under
+`/icse23/GenSym/gs_gen`, and further generate executable files.
+The script will also invoke the executable and perform the symbolic execution.
+The execution log and raw timing data are stored in
+`/icse23/icse23-artifact-evaluation/table1/results`.
 
 **Running KLEE**
 
@@ -312,7 +317,11 @@ The execution log and raw timing data are stored in
 # bash run_klee.sh
 ```
 
-**Generating Results**
+**Summarizing Results**
+
+Previous steps also generate a .csv file that contains timing data
+of LLSC, GenSym, and KLEE. We then summarize the results into a table
+by running:
 
 ```
 # cd /icse23/icse23-artifact-evaluation/table1
