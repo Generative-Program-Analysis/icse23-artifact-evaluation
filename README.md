@@ -38,22 +38,21 @@ Then we should be able to see the prompt of `bash`.
 All experiments are conducted within the Docker container.
 
 In case there are up-stream changes of the artifact, once the container is
-started you can run the following command:
+started you can run the following command to sync up (which is suggested):
 ```
 # cd /icse23
 # bash sync.sh
 ```
-to pull those changes.
 
 Once running inside the Docker, you can also find this document
 at `/icse23/icse23-artifact-evaluation/README.md`.
 
 ### Build the Docker Image
 
-The scripts used to build the Docker image can be found from
+The scripts used to build the Docker image can be found at
 `/icse23/GenSym/docker-image/Dockerfile` and
 `/icse23/GenSym/docker-image/init_script.sh`.
-Following these scripts, one can rebuild the Docker image from scratch by
+Using these scripts, one can rebuild the Docker image from scratch by
 running given a tag name:
 ```
 $ cd /icse23/GenSym/docker-image
@@ -64,8 +63,8 @@ but might be useful for anyone who would like to reuse or deploy GenSym.
 
 ## 2. Artifact Overview
 
-The Docker image runs Ubuntu 20.04 and contains [GenSym at the `icse23` branch](#),
-the [LLSC at the `fse21demo` branch](#), and
+The Docker image runs Ubuntu 20.04 and contains [GenSym at the `icse23` branch](https://github.com/Generative-Program-Analysis/GenSym/tree/icse23),
+the [LLSC at the `fse21demo` branch](https://github.com/Kraks/sai/tree/fse21demo), and
 [KLEE of version 2.3](https://github.com/klee/klee/tree/v2.3).
 LLSC and KLEE are two similar symbolic execution tools that are compared
 with GenSym in the paper.
@@ -320,12 +319,12 @@ The execution log and raw timing data are stored in
 **Summarizing Results**
 
 Previous steps also generate a .csv file that contains timing data
-of LLSC, GenSym, and KLEE. We then summarize the results into a table
-by running:
+of LLSC, GenSym, and KLEE. We then summarize the results and calculate the
+speedups into a table by running:
 
 ```
 # cd /icse23/icse23-artifact-evaluation/table1
-# bash show_table1.py
+# python3 show_table1.py
 ```
 
 ### RQ2
