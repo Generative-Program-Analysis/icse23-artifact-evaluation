@@ -9,7 +9,7 @@ import time
 import pandas as pd
 
 parser = argparse.ArgumentParser()
-parser.add_argument('--ir-files', action='store', type=Path, default='/icse23/GenSym/benchmarks/icse23/coreutils/separate')
+parser.add_argument('--ir-files', action='store', type=Path, default='/icse23/GenSym/benchmarks/coreutils/separate')
 parser.add_argument('--make-cores', action='store', type=int, default=192)
 subparsers = parser.add_subparsers()
 # prepare
