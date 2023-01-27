@@ -6,21 +6,24 @@ import subprocess as subp
 import argparse
 import json
 import time
+import os
 import pandas as pd
 
 parser = argparse.ArgumentParser()
 parser.add_argument('--ir-files', action='store', type=Path, default='/icse23/GenSym/benchmarks/coreutils/separate')
-parser.add_argument('--make-cores', action='store', type=int, default=192)
+parser.add_argument('--make-cores', action='store', type=int, default=os.cpu_count())
 subparsers = parser.add_subparsers()
 # prepare
 p = subparsers.add_parser('prepare')
 p.set_defaults(task_prepare=True, require_gs=True)
+p.add_argument('--no-codegen', dest='gen_cpp', action='store_false', default=True)
 p.add_argument('--no-build', dest='build_cpp', action='store_false', default=True)
 # run
 p = subparsers.add_parser('run')
 p.set_defaults(task_run=True, require_gs=True, task_format=True)
 p.add_argument('--restart-json', action='store', type=Path)
 p.add_argument('--repeat-num', action='store', type=int, default=5)
+p.add_argument('--exclude', action='store', nargs='+', default=('false',))
 # format
 p = subparsers.add_parser('format')
 p.set_defaults(task_format=True)
@@ -51,7 +54,7 @@ if argv.get('require_gs'):
     jarfile, = list(cur.glob('target/scala-*/GenSym-*.jar'))
     gs_launcher.append(str(jarfile))
 
-if argv.get('task_prepare'):
+if argv.get('task_prepare') and argv['gen_cpp']:
     irfile = ll_dir / 'libc_kl_posix.ll'
     for noopt in [[], ['--noOpt']]:
         outname = 'libc_klp_' + ('npt' if noopt else 'opt')
@@ -103,18 +106,18 @@ if argv.get('task_run'):
 
     arglist = []  # collect apps and scala tasks
     for item in ll_dir.glob('*.ll'):
-        if not item.stem.startswith('libc'):
+        if item.stem not in argv['exclude'] and not item.stem.startswith('libc'):
             for noopt in [[], ['--noOpt']]:
                 binname = item.stem + '_' + ('npt' if noopt else 'opt')
                 applist.append(binname)
-                if cachemap.get((binname, 'scala'), 0) < repeat_num * 2:
+                if cachemap.get((binname, 'scala'), 0) < repeat_num:
                     libpath = libnpt if noopt else libopt
                     arglist.append([*gs_args, *noopt, f'--lib={libpath}', f'--output={binname}', item])
 
     try:  # finally: dump to restart
         if arglist:
             repeat_arg = ','.join(str(len(i)) for i in arglist)
-            repeat_arg = f'--repeat={repeat_num * 2},{repeat_arg}'
+            repeat_arg = f'--repeat={repeat_num},{repeat_arg}'
             args = sum(arglist, start=[*gs_launcher, repeat_arg])
 
             p = subp.Popen(args, stdout=DEVNULL, stderr=PIPE, text=True)
@@ -175,7 +178,7 @@ if argv.get('task_format'):
     pv[('exec', 'o/n')] = pv[[('exec', 'opt'), ('exec', 'npt')]].apply(tuple, axis=1)
     pv2 = pv[[('scala', 'npt'), ('cpp', 'npt'),
               ('scala', 'o/n'), ('cpp', 'o/n'),
-              ('cloc', 'o/n'), ('exec', 'o/n')]].drop('false')
+              ('cloc', 'o/n'), ('exec', 'o/n')]]
     formatters = {
         ('scala', 'o/n'): lambda x: f'{x[0]:.2f} ({(x[0] - x[1]):+.2f})',
         ('cpp', 'o/n'): lambda x: f'{x[0]:.2f} ({(x[0] - x[1]):+.2f})',

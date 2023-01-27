@@ -262,7 +262,7 @@ The set of benchmarks for RQ1 are located in `/icse23/GenSym/benchmarks/icse23/a
 Both C source code and LLVM IR of them are already included.
 The `.ll` files are used by GenSym and LLSC, and `.bc` files are used for KLEE, since
 they link with different engine-specific APIs.
-A `Makefile` is accompanied with these benchmarks, so a suer can modify the program
+A `Makefile` is accompanied with these benchmarks, so a user can modify the program
 and produce different test cases using the same process.
 
 - To show the LOC of C source code ("C LOC" column in Table I):
@@ -350,16 +350,67 @@ numactl
 
 table 4
 
-### RQ5
+### RQ5 and RQ6
 
-**Expected Time:**
+**Expected Time: > 5 hours**
 
-table 5
+This part of the artifact aims to answer RQ5 and RQ6 by producing Table V. By
+compiling the applications in `/icse/GenSym/benchmarks/coreutils/separate` in
+separate compilation mode both with and without optimizations, we are able to
+reason about the compilation cost and the effectiveness of our compile-time
+optimizations. Before starting, change the directory to `GenSym`'s root folder,
 
-### RQ6
-**Expected Time:**
+    cd /icse23/GenSym
 
-table 5
+#### Preparation
+
+Preparing libraries for separate compilation resembles the steps compilng an
+application. First, we use GenSym to generate code in C++, and second, we
+build the C++ code. In this docker image, the first step has been baked in to
+save your time. To reproduce this step yourself, you may use (be careful this
+step can take more than 3 hours),
+
+    /icse23/icse23-artifact-evaluation/table5/compilation_test.py prepare --no-build
+
+With the C++ code generated, the next step is to build them. You should run the
+following command. You can specify `--make-cores <cores>` to limit the resources
+consumed. This step can take about >10hrs by a single thread, around 10 minutes
+in our fully paralleled setting (96 physical cores, 192 threads).
+
+    /icse23/icse23-artifact-evaluation/table5/compilation_test.py [--make-cores <cores>] prepare --no-codegen
+
+To do all the preparation from scratch at once, you may use,
+
+    /icse23/icse23-artifact-evaluation/table5/compilation_test.py [--make-cores <cores>] prepare
+
+## Execution
+
+After preparing the libraries, we can start the compilation benchmark. The
+benchmark script will compile each application twice, with and without
+optimizations. For each compiled application, the following information will be
+recorded,
+
+- the time generating the C++ code,
+- the size (LOC) of generated C++ code, measured by `cloc`.
+- the time building the C++ code in parallel, and
+- the time executing the built application with the configuration in Table II.
+
+The command we are using in this step is,
+
+    /icse23/icse23-artifact-evaluation/table5/compilation_test.py [--make-cores <cores>] run [--repeat-num <num>] [--exclude <app> ...]
+
+The most important options include,
+
+- `--make-cores <cores>`, setting the cores used by parallel making,
+- `--repeat-num <num>`, setting the repeatition of each step in the measurement,
+  defaulting to 5, and
+- `--exclude <app> ...`, specifying the applications not to include in the
+  benchmark, separated by blankspace, defaulting to `false` only.
+
+In a fully paralleled settings (>= 96 cores), testing each application for one
+iteration takes roughly around 200 seconds, where there are 15 applications
+available for testing. By the end of the benchmark, a LaTeX table will be
+printed on screen, containing the results to Table V in the paper.
 
 ## 6. Try Your Own Programs
 
