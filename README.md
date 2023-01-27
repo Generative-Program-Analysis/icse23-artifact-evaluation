@@ -352,7 +352,7 @@ table 4
 
 ### RQ5 and RQ6
 
-**Expected Time: > 5 hours**
+**Expected Time: ~5 hours in 96-core parallel**
 
 This part of the artifact aims to answer RQ5 and RQ6 by producing Table V. By
 compiling the applications in `/icse/GenSym/benchmarks/coreutils/separate` in
@@ -366,7 +366,7 @@ optimizations. Before starting, change the directory to `GenSym`'s root folder,
 
 Preparing libraries for separate compilation resembles the steps compilng an
 application. First, we use GenSym to generate code in C++, and second, we
-build the C++ code. In this docker image, the first step has been baked in to
+build the C++ code. In the docker image, the first step has been baked in to
 save your time. To reproduce this step yourself, you may use (be careful this
 step can take more than 3 hours),
 
@@ -383,7 +383,7 @@ To do all the preparation from scratch at once, you may use,
 
     /icse23/icse23-artifact-evaluation/table5/compilation_test.py [--make-cores <cores>] prepare
 
-## Execution
+#### Execution
 
 After preparing the libraries, we can start the compilation benchmark. The
 benchmark script will compile each application twice, with and without
