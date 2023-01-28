@@ -30,6 +30,7 @@ Authors: Guannan Wei, Songlin Jia, Ruiqi Gao, Haotian Deng, Shangyin Tan, Oliver
     - [RQ4](#rq4)
     - [RQ5 and RQ6](#rq5-and-rq6)
   - [Try Your Own Programs](#try-your-own-programs)
+    - [Built-in Test Cases](#built-in-test-cases)
     - [Use GenSym's Interface](#use-gensyms-interface)
     - [Generated Files](#generated-files)
 
@@ -559,10 +560,22 @@ It is possible to use GenSym's interface to compile your own programs.
 One way is to run GenSym's main function in `sbt`:
 
 ```
-sbt:GenSym> runMain gensym.RunGenSym <arguments> <ll-filepath> [--entrance=<string>] [--output=<string>] [--nSym=<int>] [--use-argv] [--noOpt] [--engine=<string>] [--main-O0]
+sbt:GenSym> runMain gensym.RunGenSym <ll-filepath> [--entrance=<string>] [--output=<string>] [--nSym=<int>] [--use-argv] [--noOpt] [--engine=<string>] [--main-O0]
 ```
 
 Running `runMain gensym.RunGenSym --help` in `sbt` prints the help message.
+
+### Built-in Test Cases
+
+`/icse23/GenSym/src/test/scala/gensym/TestCases.scala` contains a number of test
+cases that exercise GenSym and examine its correctness. To run the test cases,
+run the following command in `sbt`:
+
+```
+sbt:GenSym> test
+```
+
+This test is also performed in the [Github CI pipeline](https://github.com/Generative-Program-Analysis/GenSym/actions).
 
 ### Generated Files
 
