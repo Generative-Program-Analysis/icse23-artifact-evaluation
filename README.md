@@ -411,7 +411,10 @@ The ones relevant are `name`, `t-solver-ext`, `t-solver-int`, and `t-exec`.
 - `t-solver-ext` and `t-solver-int` are external and internal solver time used by the program respectively. The T_Solver field in the paper is a sum of external and internal solver time.
 - `t-exec` is the total execution time.
 
+
 Also note that the `paths` column denotes the number of paths explored, which should be the same for the POSIX file system and our meta file system.
+
+To view the output in a table, run `python3 tablize.py` under the `table4` directory.
 
 ### RQ5 and RQ6
 
