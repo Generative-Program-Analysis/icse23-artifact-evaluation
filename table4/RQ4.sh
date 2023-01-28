@@ -10,8 +10,8 @@ LOG_DIR=`realpath ./logs`                             # directory to store the l
 BM_SCRIPT=`realpath ./test_benchmark`                 # the test_benchmark script
 export BM_EXPAND_SCRIPT=`realpath ./braces_expand.py` # the script to perform braces expansion, will be detected by BM_SCRIPT
 declare -A inputs=(
-[posix]=$PROJ_DIR/benchmarks/icse23/gensym_posix/
-[uclibc]=$PROJ_DIR/benchmarks/icse23/gensym_uclibc/
+[posix]=$PROJ_DIR/benchmarks/icse23/gensym_posix
+[uclibc]=$PROJ_DIR/benchmarks/icse23/gensym_uclibc
 )
 GCOV_DIR=`realpath ../gcov`                                           # TODO: point to gcov executables
 ENV_SCRIPT=""                                         # TODO (OPTIONAL): set up PATH, CPLUS_INCLUDE_PATH, LD_LIBRARY_PATH, LIBRARY_PATH, etc.
