@@ -152,18 +152,36 @@ gs_table = gs_table.rename(columns={'Path': 'gensym-Path', 'LineCov': 'gensym-Li
 gs_table.to_csv('gs_table.csv')
 
 total_table = pd.concat([klee_table, gs_table], axis=1)
-total_table['Exec Speedup'] = (total_table['klee-ExeTime'] / total_table['gensym-ExeTime']).apply(lambda x: round(x, 2))
-total_table['Whole Speedup'] = (total_table['klee-WallTime'] / total_table['gensym-WallTime']).apply(lambda x: round(x, 2))
-
+total_table['Path Throughput'] = ((total_table['gensym-Path'] / total_table['gensym-ExeTime']) / (total_table['klee-Path'] / total_table['klee-ExeTime'])).apply(lambda x: round(x, 2))
 total_table['klee-LineCov'] = total_table['klee-LineCov'].astype(str)
 total_table['klee-LineCov'] = total_table['klee-LineCov'] + '%'
 total_table['gensym-LineCov'] = total_table['gensym-LineCov'].astype(str)
 total_table['gensym-LineCov'] = total_table['gensym-LineCov'] + '%'
 
-total_table['Exec Speedup'] = total_table['Exec Speedup'].astype(str)
-total_table['Exec Speedup'] = total_table['Exec Speedup'] + 'x'
-total_table['Whole Speedup'] = total_table['Whole Speedup'].astype(str)
-total_table['Whole Speedup'] = total_table['Whole Speedup'] + 'x'
+total_table['Path Throughput'] = total_table['Path Throughput'].astype(str)
+total_table['Path Throughput'] = total_table['Path Throughput'] + 'x'
 
 print(total_table)
-total_table.to_csv("short-running.csv")
+total_table.to_csv("long-running.csv")
+
+arg_data = [["base32",    "4",  "2x2", "4"],
+            ["base64",    "4",  "2x2", "4"],
+            ["cat",       "3",  "-",   "3"],
+            ["comm",      "3",  "2x2", "3+1"],
+            ["cut",       "3",  "2x2", "3+3"],
+            ["dirname",   "6",  "-",   "9+15"],
+            ["echo",      "-",  "-",   "4+8"],
+            ["expand",    "3",  "2x2", "3"],
+            ["fold",      "3",  "2x2", "3"],
+            ["join",      "3",  "2x2", "3+3"],
+            ["link",      "3",  "2x2", "3+3+3"],
+            ["paste",     "3",  "2x2", "3+3"],
+            ["pathchk",   "3",  "2x2", "3+3"]]
+
+arg_df = pd.DataFrame(arg_data,columns=['Program', '-sym-stdin', '-sym-files', '-sym-arg'])
+arg_df = arg_df.set_index("Program")
+tex_table = pd.concat([arg_df, total_table], axis=1)
+
+texFile = open('long-running-table.tex', 'w')
+print(tex_table.to_latex(), file = texFile)
+texFile.close()
