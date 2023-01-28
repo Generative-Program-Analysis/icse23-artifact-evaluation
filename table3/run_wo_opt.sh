@@ -5,7 +5,7 @@ declare -A symloc_strategy
 declare -a orders
 declare -a threads
 
-iter_num=5
+iter_num=1
 
 gs_gen_dir=/icse23/GenSym/gs_gen
 gs_engine=ImpCPSGS

@@ -43,8 +43,6 @@ dependencies and third-party tools installed.
 
 To obtain the Docker image (you may need root privilege to run `docker`):
 
-TODO: update the image tag `dev` -> `icse23`
-
 ```
 $ docker pull guannanwei/gensym:icse23
 ```
@@ -54,7 +52,7 @@ $ docker pull guannanwei/gensym:icse23
 Then to instantiate the Docker image, run the following command:
 
 ```
-docker run --name <container_name> --ulimit='stack=-1:-1' -it guannanwei/gensym:icse23 bash
+docker run --name <container_name> --ulimit='stack=268435456:268435456' -it guannanwei/gensym:icse23 bash
 ```
 
 Then we should be able to see the prompt of `bash`.
@@ -193,8 +191,6 @@ The first time running `sbt` downloads dependencies specified in `build.sbt` and
 compiles the Scala code to JVM bytecode, which may take a few minutes.
 After printing some compilation log, we should see `[success]` in the output.
 This generates a C++ file `/icse23/GenSym/headers/gensym/external.hpp`.
-
-TODO: disable logging
 
 Next, we can use GenSym to compile a simple example program. We use a C program,
 which is stored in `/icse23/GenSym/benchmarks/llvm/branch.c`:
@@ -376,7 +372,6 @@ no more than 8 is a good choice.
 If you still experience out-of-memory in Docker, please try to decrease the
 number of CPU cores.
 With more memory, you may increase the number of parallel `g++` instances.
-TODO: how to change the number of parallel g++ instances
 
 To compile Coreutils benchmarks with GenSym, we first need to generate the C++ code
 and the executables by running:
@@ -438,12 +433,76 @@ additionally with the "Path Throughput Ratio of GenSym over KLEE".
 
 ### RQ3
 
-**Expected Time:**
+**Expected Time: (2 + 20 hours)**
 
-table 3
-This experiment evaluates the performance of GemSym's parallel execution (Table III).
+This experiment evaluates the performance of GemSym's parallel execution (Table
+III). The experiment consists of two parts: (1) parallel execution with
+solver-chain optimizations enabled (left hand side of Table III), and (2)
+parallel execution with solver-chain optimizations disabled (right hand side of
+Table III).
+This is because the solver-chain optimizations are repeated in each worker
+thread, leading to unfaithful characterization of the performance of parallel
+execution.
+This is important to evaluate the performance of our continuation-based
+parallel execution when each thread has no overlapped work.
+However, in a realistic scenario, the solver-chain optimizations are
+always enabled.
 
-numactl
+Before proceeding this step, please make sure that you have already compiled all
+Coreutils benchmarks with GenSym (i.e. running `testOnly
+icse23.CompileCoreutilsPOSIX` in `sbt` from RQ2).
+
+**Parallel Execution with Solver-Chain Optimizations Enabled (2 hours)**
+
+To run this experiment with solver-chain optimizations enabled:
+
+```
+# cd /icse23/icse23-artifact-evaluation/table3
+# bash run_with_opt.sh
+```
+
+After the experiment finishes, you can use the following command to generate the
+left-hand side of Table III:
+
+```
+# python3 show_table.py result_opt.csv
+```
+
+**Parallel Execution with Solver-Chain Optimizations Disabled (20 hours+)**
+
+To run this experiment with solver-chain optimizations disabled:
+
+```
+# cd /icse23/icse23-artifact-evaluation/table3
+# bash run_wo_opt.sh
+```
+
+After the experiment finishes, you can use the following command to generate the
+right-hand side of Table III:
+
+```
+# python3 show_table.py result_no_opt.csv
+```
+
+Note: `run_wo_opt.sh` by default will run each experiment for 1 times to save time,
+since each run make take +1 hour after disabling all solver-chain optimizations.
+You may want to change the `iter_num` variable in the script to 5 for more
+statistically stable results.
+
+**NUMA Machine Instruction**
+
+If you run this experiment on a NUMA (Non-uniform memory access ) machine, you
+may need to use additional tools to pin the threads to a NUMA node consistently
+during its execution. To do that, we provide two scripts if you are using
+a NUMA machine:
+
+```
+# cd /icse23/icse23-artifact-evaluation/table3
+# bash run_with_opt_numa.sh // with solver chain optimizations
+# bash run_wo_opt_numa.sh   // without solver chain optimizations
+```
+
+Then you use the same Python script to generate the table.
 
 ### RQ4
 
