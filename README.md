@@ -409,7 +409,8 @@ The `short-running.csv` contains the following statistics for both KLEE and GenS
 ```
 path, line coverage, query time, solver time, execution time, whole time
 ```
-With the Execution time Speedup and Whole time Speedup of GenSym over KLEE.
+additionally with the "Execution time Speedup" and "Whole Time Speedup of GenSym
+over KLEE".
 
 **Long-Running Benchmark (26 hours)**
 
@@ -433,7 +434,7 @@ The `long-running.csv` contains the following statistic for both KLEE and GenSym
 ```
 path, line coverage, query time, solver time, execution time, whole time
 ```
-With the "Path Throughput" of GenSym over KLEE.
+additionally with the "Path Throughput Ratio of GenSym over KLEE".
 
 ### RQ3
 
