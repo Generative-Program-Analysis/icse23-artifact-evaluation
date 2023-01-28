@@ -365,14 +365,6 @@ TABLE II.
 
 **Preparation (~2.5 hours)**
 
-The process of compiling generated C++ programs to executable uses half of the
-CPU cores (both physical and logical) by default.
-If you only have 32GB memory, limiting the the number of parallel `g++` instances
-no more than 8 is a good choice.
-If you still experience out-of-memory in Docker, please try to decrease the
-number of CPU cores.
-With more memory, you may increase the number of parallel `g++` instances.
-
 To compile Coreutils benchmarks with GenSym, we first need to generate the C++ code
 and the executables by running:
 ```
@@ -390,10 +382,21 @@ sbt:GenSym> testOnly icse23.CompileCoreutilsPOSIX
 ```
 The C++ code and executables can be found at `/icse23/GenSym/gs_gen`.
 
+The process of compiling generated C++ programs to executable uses half of the
+CPU cores (both physical and logical) by default.
+If your machine only has 16 cores and 32GB memory, limiting the the number of
+parallel `g++` instances no more than 8 is a good choice and this may take ~2.5
+hours.
+
+If you still experience out-of-memory in Docker, please try to decrease the
+number of CPU cores (and this leads to longer compilation time).
+With more memory, you may increase the number of parallel `g++` instances.
+
 
 **Short-Running Benchmark (<1 hour)**
 
-After compiling the executables, we first start the short-running task which will finish within 1 hour by running:
+After compiling the executables, we first start the short-running task which
+will finish within 1 hour by running:
 ```
 # cd /icse23/icse23-artifact-evaluation/table2
 # bash short_run.sh
@@ -413,10 +416,11 @@ The long-running tasks take ~1 hour for each Coreutils program on both KLEE and
 GenSym.
 We will run 13 programs so the total running time is ~26 hours.
 
+We recommend running this benchmark on a machine with *at least 128GB memory*.
 The long-running benchmark of Table II reported in our paper is conducted on a
-machine with 4 Intel Xeon 8168 CPUs and 3TB memory. Running this benchmark on
-32GB machine will result in fewer path number due to memory limit. We recommend
-running this benchmark on a machine with at least 128GB memory.
+machine with 4 Intel Xeon 8168 CPUs and 3TB memory.
+Using a machine with 32GB memory will result in fewer path number from KLEE or
+killed process of GenSym.
 
 To launch the long-running benchmark, run:
 ```
