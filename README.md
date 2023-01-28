@@ -121,7 +121,7 @@ in the artifact include
 - STP (SMTCOMP2020 release)
 - g++ 9.40
 - clang/clang++/LLVM 11
-- Java Virtual Machine 11
+- Java Virtual Machine 8
 - Scala 2.12
 - sbt
 
