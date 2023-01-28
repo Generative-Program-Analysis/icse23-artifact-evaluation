@@ -30,8 +30,8 @@ Authors: Guannan Wei, Songlin Jia, Ruiqi Gao, Haotian Deng, Shangyin Tan, Oliver
     - [RQ4](#rq4)
     - [RQ5 and RQ6](#rq5-and-rq6)
   - [Try Your Own Programs](#try-your-own-programs)
-    - [Built-in Test Cases](#built-in-test-cases)
     - [Use GenSym's Interface](#use-gensyms-interface)
+    - [Built-in Test Cases](#built-in-test-cases)
     - [Generated Files](#generated-files)
 
 <!-- /TOC -->
@@ -356,11 +356,18 @@ speedups into a table by running:
 
 **Expected Time: 30 hours**
 
-This part of the artifact aims to answer RQ2 by producing Table II. By running GenSym and KLEE on the same Coreutils programs, we can validate GenSym's correctness and performance. We use two sets of configurations: (1) *short-running* configurations that have small symbolic inputs that will finish in minutes, and (2) *long-running* configurations that have large symbolic inputs and will timeout for 1hr.
+This part of the artifact aims to answer RQ2 by producing Table II. By running
+GenSym and KLEE on the same Coreutils programs, we compare GenSym's performance
+with interpretation-based engines. We use two sets of configurations: (1)
+*short-running* configurations that have small symbolic inputs that will finish
+in minutes, and (2) *long-running* configurations that have large symbolic
+inputs and will timeout for 1hr.
 
-*short-running* configurations correspond to the upper half of TABLE II, *long-running* configurations correspond to the lower half of TABLE II.
+The result of *short-running* configurations correspond to the upper half of
+TABLE II, and *long-running* configurations correspond to the lower half of
+TABLE II.
 
-**Preparation: ~2.5 hours**
+**Preparation (~2.5 hours)**
 
 The process of compiling generated C++ programs to executable uses half of the
 CPU cores (both physical and logical) by default.
@@ -369,6 +376,7 @@ no more than 8 is a good choice.
 If you still experience out-of-memory in Docker, please try to decrease the
 number of CPU cores.
 With more memory, you may increase the number of parallel `g++` instances.
+TODO: how to change the number of parallel g++ instances
 
 To compile Coreutils benchmarks with GenSym, we first need to generate the C++ code
 and the executables by running:
@@ -380,12 +388,15 @@ and the executables by running:
 Inside the sbt terminal, run:
 ```
 sbt:GenSym> runMain gensym.GenerateExternal
+```
+and then
+```
 sbt:GenSym> testOnly icse23.CompileCoreutilsPOSIX
 ```
 The C++ code and executables can be found at `/icse23/GenSym/gs_gen`.
 
 
-**Short-Running Benchmark: <1 hour**
+**Short-Running Benchmark (<1 hour)**
 
 After compiling the executables, we first start the short-running task which will finish within 1 hour by running:
 ```
@@ -394,17 +405,22 @@ After compiling the executables, we first start the short-running task which wil
 ```
 Upon completion, the script will output a csv file named `short-running.csv` under the `table2` directory.
 
-The `short-running.csv` contains the following statistic for both KLEE and GenSym:
+The `short-running.csv` contains the following statistics for both KLEE and GenSym:
 ```
 path, line coverage, query time, solver time, execution time, whole time
 ```
 With the Execution time Speedup and Whole time Speedup of GenSym over KLEE.
 
-**Long-Running Benchmark: 26 hours**
+**Long-Running Benchmark (26 hours)**
 
-We can start the long-running task which will run about 1 hour for each Coreutils program on both KLEE and GenSym. We will run 13 programs so the total running time is ~26 hours.
+The long-running tasks take ~1 hour for each Coreutils program on both KLEE and
+GenSym.
+We will run 13 programs so the total running time is ~26 hours.
 
-The long-running benchmark of TABLE II reported in our paper is conducted on a machine with 4 Intel Xeon 8168 CPUs and 3TB memory.Running this benchmark on 32GB machine will result in fewer path number due to memory limit.
+The long-running benchmark of Table II reported in our paper is conducted on a
+machine with 4 Intel Xeon 8168 CPUs and 3TB memory. Running this benchmark on
+32GB machine will result in fewer path number due to memory limit. We recommend
+running this benchmark on a machine with at least 128GB memory.
 
 To launch the long-running benchmark, run:
 ```
@@ -417,18 +433,9 @@ The `long-running.csv` contains the following statistic for both KLEE and GenSym
 ```
 path, line coverage, query time, solver time, execution time, whole time
 ```
-With the Path Throughput of GenSym over KLEE.
+With the "Path Throughput" of GenSym over KLEE.
 
 ### RQ3
-
-TODO: mention this in RQ2
-The process of compiling generated C++ programs to executable uses half of the
-CPU cores (both physical and logical) by default.
-If you only have 32GB memory, limiting the the number of parallel `g++` instances
-no more than 8 is a good choice.
-If you still experience out-of-memory in Docker, please try to decrease the
-number of CPU cores.
-With more memory, you may increase the number of parallel `g++` instances.
 
 **Expected Time:**
 
