@@ -58,7 +58,7 @@ To instantiate the Docker image, run the following command (we need to use
 `ulimit` to increase stack size to avoid stack overflow):
 
 ```
-docker run --name <container_name> --ulimit='stack=268435456:268435456' -it guannanwei/gensym:icse23 bash
+sudo docker run --name test --ulimit='stack=268435456:268435456' -it guannanwei/gensym:dev bash -c 'source /icse23/sync.sh; bash'
 ```
 
 Then we should be able to see the prompt of `bash`.
@@ -179,23 +179,19 @@ In this Kick-the-Tires step, we make a basic sanity check of the whole compilati
 We use a simple branching program as example and explain the pipeline.
 
 The first preparation step is to generate GenSym's external models.
+Although this step has been performed at image-creation time, we explain
+how to do it again here for completeness.
 These models simulate symbolic behaviors of external functions, such as
 the POSIX file system.
 GenSym defines models for external functions in a Scala DSL, which will be
 generated to C++ functions that can be used together with the compiled
 application code.
-To do this, we start an interactive `sbt` session by running
-(`start_sbt` sets necessary parameters for JVM and invokes `sbt`):
+
+To do this, we perform the following command in the Docker image:
 
 ```
 # cd /icse23/GenSym
-# ./start_sbt
-```
-
-Then we run the following command in the `sbt` session to generate models for external functions
-
-```
-sbt:GenSym> runMain gensym.GenerateExternal
+# sbt "runMain gensym.GenerateExternal"
 ```
 
 The first time running `sbt` downloads dependencies specified in `build.sbt` and
@@ -204,7 +200,7 @@ After printing some compilation log, we should see `[success]` in the output.
 This generates a C++ file `/icse23/GenSym/headers/gensym/external.hpp`.
 
 Next, we can use GenSym to compile a simple example program. We use a C program,
-which is stored in `/icse23/GenSym/benchmarks/llvm/branch.c`:
+located at `/icse23/GenSym/benchmarks/llvm/branch.c`:
 
 ```
 int f(int x, int y) {
@@ -217,11 +213,13 @@ int f(int x, int y) {
 ```
 
 Its LLVM IR file can be found in `/icse23/GenSym/benchmarks/llvm/branch.ll`.
-We have mechanized this kick-the-tire compilation process as a test case. We
-can run the following command in `sbt` to use GenSym to compile:
+We have mechanized this kick-the-tire compilation process as a test case.
+We can run the following command that invokes `sbt` to use GenSym to compile
+`branch.ll`:
 
 ```
-sbt:GenSym> testOnly icse23.KickTheTires
+// under /icse23/GenSym
+# sbt "testOnly icse23.KickTheTires"
 ```
 
 This step invokes GenSym to (1) compile the LLVM IR input to C++ code
@@ -235,25 +233,27 @@ following output from `sbt` at the end:
 ```
 
 This signals the success of the kick-the-tires compilation process.
-Then we can exit sbt.  The generated C++ program and tests are located in
+The generated C++ program and tests are located in
 `/icse23/GenSym/gs_gen/ImpCPSGS_branch1` for further inspection.
 
 ## 4. Benchmarks Description
 
 The paper uses two groups of benchmarks: (1) algorithm programs with finite
 numbers of paths, and (2) a subset of GNU Coreutils (v8.32) programs that have interaction
-with OS file system and command line interface.
+with the OS file system and command line interface.
 
 We use the algorithm benchmarks in Table I, whose C source code and LLVM IR can
 be found in `/icse23/GenSym/benchmarks/icse23/algorithms`.
 
-We use the Coreutils benchmarks in the rest of experiments, including Table {II,
+We use the Coreutils benchmarks for the rest of experiments, including Table {II,
 III, IV, V}.
 Their LLVM IR can be found in `/icse23/GenSym/benchmarks/icse23/coreutils`.
 The C source code of Coreutils are included in the artifact under
 `/icse23/coreutils-src`.
 The `gcov`-instrumented Coreutils programs are included in the artifact under
-`/icse23/coreutils-src/obj-gcov/src`.
+`/icse23/coreutils-src/obj-gcov/src`, which are used to evaluate coverage
+of generated test cases.
+
 The generation of Coreutils LLVM IR from their C source code is not
 part of the artifact, but can be found in a [separate document](https://github.com/Generative-Program-Analysis/coreutils-testing-instruction) we
 prepared.
@@ -263,7 +263,7 @@ configurations. The paper uses two configurations: (1) *short-running*
 configurations that have smaller number of symbolic inputs and can be
 symbolically executed in a few minutes, and (2) *long-running*
 configurations that have more number of symbolic inputs and take much
-longer time to test.
+longer time to test (each single run for ~1hour).
 
 Both GenSym and KLEE can finish the short-running configuration benchmarks,
 and they explore the same set of paths. Therefore we can compare the performance
@@ -323,7 +323,7 @@ is produced by running the program with symbolic execution, which is the next st
 # cd /icse23/icse23-artifact-evaluation/table1
 # bash run_llsc.sh
 ```
-This steps compiles those benchmarks with LLSC, which generates code under
+This step compiles those benchmarks with LLSC, which generates code under
 `/icse23/llsc/dev-clean/llsc_gen`, and further generate executable files.
 The script will also invoke the executable and perform the symbolic execution.
 The execution log and raw timing data are stored in
@@ -335,7 +335,7 @@ The execution log and raw timing data are stored in
 # cd /icse23/icse23-artifact-evaluation/table1
 # bash run_gensym.sh
 ```
-This steps compiles those benchmarks with GenSym, which generates code under
+This step compiles those benchmarks with GenSym, which generates code under
 `/icse23/GenSym/gs_gen`, and further generate executable files.
 The script will also invoke the executable and perform the symbolic execution.
 The execution log and raw timing data are stored in
@@ -347,12 +347,15 @@ The execution log and raw timing data are stored in
 # cd /icse23/icse23-artifact-evaluation/table1
 # bash run_klee.sh
 ```
+This step uses KLEE to symbolically interpret these benchmarks and
+generate test cases. The output and logs are stored in
+`/icse23/icse23-artifact-evaluation/table1/results`.
 
 **Summarizing Results**
 
-Previous steps also generate a .csv file that contains timing data
-of LLSC, GenSym, and KLEE. We then summarize the results and calculate the
-speedups into a table by running:
+Previous steps run each engine/benchmark for 5 times and also generate a .csv
+file that contains timing data of LLSC, GenSym, and KLEE. We then summarize the
+results and calculate the speedups into a table by running:
 
 ```
 # cd /icse23/icse23-artifact-evaluation/table1
@@ -363,12 +366,12 @@ speedups into a table by running:
 
 **Expected Time: 30 hours**
 
-This part of the artifact aims to answer RQ2 by producing Table II. By running
+This part of the artifact aims to answer RQ2 by reproducing Table II. By running
 GenSym and KLEE on the same Coreutils programs, we compare GenSym's performance
 with interpretation-based engines. We use two sets of configurations: (1)
 *short-running* configurations that have small symbolic inputs that will finish
-in minutes, and (2) *long-running* configurations that have large symbolic
-inputs and will timeout for 1hr.
+in a few minutes, and (2) *long-running* configurations that have more symbolic
+inputs and will timeout for 1 hour.
 
 The result of *short-running* configurations correspond to the upper half of
 TABLE II, and *long-running* configurations correspond to the lower half of
@@ -383,31 +386,40 @@ and the executables by running:
 # ./start_sbt
 ```
 
-Inside the sbt terminal, run:
-```
-sbt:GenSym> runMain gensym.GenerateExternal
-```
-and then
+Then, inside the `sbt` session, run:
 ```
 sbt:GenSym> testOnly icse23.CompileCoreutilsPOSIX
 ```
-The C++ code and executables can be found at `/icse23/GenSym/gs_gen`.
+This step invokes GenSym to compile Coreutils LLVM IR to C++ code and
+then compile the C++ code to executables.
+After the compilation, the C++ code and executables can be found at
+`/icse23/GenSym/gs_gen`.
 
-The process of compiling generated C++ programs to executable uses half of the
-CPU cores (both physical and logical) by default.
+Since the generated code is large, this step may take a while depending
+on how many CPU and memory resources can be used.
+The process of compiling generated C++ programs to executable (i.e. by `g++`) by
+default uses half of the CPU cores (both physical and logical) in parallel.
 If your machine only has 16 cores and 32GB memory, limiting the the number of
-parallel `g++` instances no more than 8 is a good choice and this may take ~2.5
-hours.
+parallel `g++` instances no more than 8 is a good choice (this may take ~2.5
+hours).
 
 If you still experience out-of-memory in Docker, please try to decrease the
 number of CPU cores (and this leads to longer compilation time).
 With more memory, you may increase the number of parallel `g++` instances.
 
+To override the default number of parallel `g++` instances, you need to change class `CompileCoreutilsPOSIX` in file
+`src/test/scala/icse23/CompileCoreutils.scala` with `n` cores you want to use:
+
+```
+override val cores: Option[Int] = Some(n)
+```
+
+and then run `testOnly icse23.CompileCoreutilsPOSIX` in `sbt`.
 
 **Short-Running Benchmark (<1 hour)**
 
-After compiling the executables, we first start the short-running task which
-will finish within 1 hour by running:
+After compiling the executables, we first start the short-running task
+(reproducing upper part of Table II) which will finish within 1 hour by running:
 ```
 # cd /icse23/icse23-artifact-evaluation/table2
 # bash short_run.sh
@@ -423,8 +435,9 @@ over KLEE".
 
 **Long-Running Benchmark (26 hours)**
 
-The long-running tasks take ~1 hour for each Coreutils program on both KLEE and
-GenSym.
+We can then run long-running configurations to reproduce the lower part of Table II.
+The long-running tasks take ~1 hour for each of the Coreutils programs on both
+KLEE and GenSym, and we can measure the throughput of each tool.
 We will run 13 programs so the total running time is ~26 hours.
 
 We recommend running this benchmark on a machine with *at least 128GB memory*.
@@ -455,13 +468,16 @@ III). The experiment consists of two parts: (1) parallel execution with
 solver-chain optimizations enabled (left hand side of Table III), and (2)
 parallel execution with solver-chain optimizations disabled (right hand side of
 Table III).
-This is because the solver-chain optimizations are repeated in each worker
-thread, leading to unfaithful characterization of the performance of parallel
-execution.
-This is important to evaluate the performance of our continuation-based
-parallel execution when each thread has no overlapped work.
+The reason behind this is because the solver-chain optimizations are repeated in
+each worker thread, leading to unfaithful characterization of the performance of
+parallel execution.
+To evaluate the performance of our continuation-based parallel execution where
+each thread has no overlapped work, we disable the solver-chain optimizations.
 However, in a realistic scenario, the solver-chain optimizations are
 always enabled.
+
+For both parts of the experiment, we run 1/4/8/12 threads using
+the short-running configuration of Coreutils benchmarks.
 
 Before proceeding this step, please make sure that you have already compiled all
 Coreutils benchmarks with GenSym (i.e. running `testOnly
@@ -482,6 +498,10 @@ left-hand side of Table III:
 ```
 # python3 show_table.py result_opt.csv
 ```
+
+Note: since this is a short-running experiment and with solver-chain optimizations,
+if single-thread execution is already fast enough (e.g. less than 30 seconds),
+you may not observe significant speedups using 8 or 12 threads.
 
 **Parallel Execution with Solver-Chain Optimizations Disabled (20 hours+)**
 
