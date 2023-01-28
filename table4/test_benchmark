@@ -65,9 +65,8 @@ echo "[test_benchmark] runtime timeout: $RUNTIME_TIMEOUT"
 
 if [ "$SCALA_COMPILE" = "true" ] || [ ! -d "gs_gen/${HEAD}" ]; then
 	export SBT_OPTS="-Xms4G -Xmx32G -Xss1024M -XX:MaxMetaspaceSize=8G -XX:ReservedCodeCacheSize=2048M"
-	/usr/bin/time --format "[test_benchmark] scala compilation time => real: %e,\tuser: %U,\tsys: %S" \
-		sbt "runMain gensym.RunGenSym ${LL} --use-argv --output=${HEAD} --engine=ImpCPS --main-opt=O0 --entrance=main"
-		# bloop run sai -m gensym.RunGenSym -- -J-Xms4g -J-Xmx8g -J-Xss1024M -J-XX:MaxMetaspaceSize=8G -J-XX:ReservedCodeCacheSize=2048M ${LL} --use-argv --output=${HEAD} --engine=ImpCPS --main-opt=O0 --entrance=main
+	sbt "runMain gensym.RunGenSym ${LL} --use-argv --output=${HEAD} --engine=ImpCPS --main-opt=O0 --entrance=main"
+	# bloop run sai -m gensym.RunGenSym -- -J-Xms4g -J-Xmx8g -J-Xss1024M -J-XX:MaxMetaspaceSize=8G -J-XX:ReservedCodeCacheSize=2048M ${LL} --use-argv --output=${HEAD} --engine=ImpCPS --main-opt=O0 --entrance=main
 	check_failure "Failed to perform scala compilation with input ${LL}"
 fi
 
@@ -76,8 +75,7 @@ if [ "$CPP_COMPILE" = "true" ] || [ ! -f "gs_gen/${HEAD}/${HEAD}" ]; then
 	make clean
 	echo -n "[test_benchmark] "
 	pwd
-	/usr/bin/time --format "[test_benchmark] c++ compilation time => real: %e,\tuser: %U,\tsys: %S" \
-		make -j${CPP_NJOBS} )
+	make -j${CPP_NJOBS} )
 	check_failure "Failed to perform cpp compilation for ${HEAD}"
 fi
 
