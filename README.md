@@ -426,7 +426,7 @@ The most important options include,
 To get a quick run of this experiment just for `base32`, you may use the
 following command assuming you have a 16-core/32GB-memory machine:
 
-    /icse23/icse23-artifact-evaluation/table5/compilation_test.py --make-cores 8 run --repeat-num 1 --exclude ???
+    /icse23/icse23-artifact-evaluation/table5/compilation_test.py --make-cores 8 run --repeat-num 1 --exclude base64 cat comm cut dirname echo expand false fold join link paste pathchk true
 
 The numbers reported in the paper uses 96 cores in this step, and testing each
 application for one iteration takes roughly around 200 seconds, where there are
