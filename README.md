@@ -460,7 +460,7 @@ benchmark script will compile each application twice, with and without GenSym's 
 optimizations. For each compiled application, the following information will be
 recorded,
 
-- the time generating the C++ code,
+- the time generating the C++ code (you may observe varied results from run to run due to the variabilities in JVM, while the results given by a single benchmark invocation should remain consistent and valid),
 - the size (LOC) of generated C++ code, measured by `cloc`,
 - the time building the C++ code in parallel, and
 - the time executing the built application with the configuration in Table II (upper part).
