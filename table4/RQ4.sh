@@ -6,12 +6,12 @@
 ###################
 
 PROJ_DIR=/icse23/GenSym                                # project root directory
-LOG_DIR=`realpath ./logs`                             # directory to store the log files
+LOG_DIR=`realpath ./output`                             # directory to store the log files
 BM_SCRIPT=`realpath ./test_benchmark`                 # the test_benchmark script
 export BM_EXPAND_SCRIPT=`realpath ./braces_expand.py` # the script to perform braces expansion, will be detected by BM_SCRIPT
 declare -A inputs=(
-[posix]=$PROJ_DIR/benchmarks/icse23/gensym_posix
-[uclibc]=$PROJ_DIR/benchmarks/icse23/gensym_uclibc
+[posix]=$PROJ_DIR/benchmarks/coreutils/gensym_posix
+[uclibc]=$PROJ_DIR/benchmarks/coreutils/gensym_uclibc
 )
 GCOV_DIR=`realpath ../gcov`                                           # TODO: point to gcov executables
 ENV_SCRIPT=""                                         # TODO (OPTIONAL): set up PATH, CPLUS_INCLUDE_PATH, LD_LIBRARY_PATH, LIBRARY_PATH, etc.
@@ -116,7 +116,7 @@ if [ "${GEN_EXTERNAL}" = "true" ]; then
 fi
 
 # iterate through each set of input LLVM files (e.g. posix and uclibc)
-OUTFILERUNTIME="runtime.csv"
+OUTFILERUNTIME="$LOG_DIR/runtime.csv"
 echo "name,option,t-solver-ext,t-solver-int,t-exec,blocks,br,paths,threads,task-in-q,queries" >> ${OUTFILERUNTIME}
 for i in "${!inputs[@]}"; do
 	idir="${inputs[$i]}" # the input LLVM directory
