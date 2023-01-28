@@ -161,6 +161,8 @@ total_table['gensym-LineCov'] = total_table['gensym-LineCov'] + '%'
 total_table['Path Throughput'] = total_table['Path Throughput'].astype(str)
 total_table['Path Throughput'] = total_table['Path Throughput'] + 'x'
 
+total_table = total_table.rename(columns={'klee-WallTime' : 'klee-WholeTime', 'gensym-WallTime' : 'gensym-WholeTime', 'klee-ExeTime' : 'klee-ExecTime', 'gensym-ExeTime' : 'gensym-ExecTime'})
+
 print(total_table)
 total_table.to_csv("long-running.csv")
 

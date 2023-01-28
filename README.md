@@ -353,18 +353,70 @@ speedups into a table by running:
 
 ### RQ2
 
-**Expected Time:**
+**Expected Time: 30 hours**
 
-TODO: make sure  runMain gensym.GenerateExternal is executed first
+This part of the artifact aims to answer RQ2 by producing Table II. By running GenSym and KLEE on the same Coreutils programs, we can validate GenSym's correctness and performance. We use two sets of configurations: (1) *short-running* configurations that have small symbolic inputs that will finish in minutes, and (2) *long-running* configurations that have large symbolic inputs and will timeout for 1hr.
+
+*short-running* configurations correspond to the upper half of TABLE II, *long-running* configurations correspond to the lower half of TABLE II.
+
+**Preparation: ~2.5 hours**
+
+The process of compiling generated C++ programs to executable uses half of the
+CPU cores (both physical and logical) by default.
+If you only have 32GB memory, limiting the the number of parallel `g++` instances
+no more than 8 is a good choice.
+If you still experience out-of-memory in Docker, please try to decrease the
+number of CPU cores.
+With more memory, you may increase the number of parallel `g++` instances.
 
 To compile Coreutils benchmarks with GenSym, we first need to generate the C++ code
 and the executables by running:
 ```
-testOnly icse23.CompileCoreutilsPOSIX
+# cd /icse23/GenSym
+# ./start_sbt
+```
+
+Inside the sbt terminal, run:
+```
+sbt:GenSym> runMain gensym.GenerateExternal
+sbt:GenSym> testOnly icse23.CompileCoreutilsPOSIX
 ```
 The C++ code and executables can be found at `/icse23/GenSym/gs_gen`.
 
-table 2
+
+**Short-Running Benchmark: <1 hour**
+
+After compiling the executables, we first start the short-running task which will finish within 1 hour by running:
+```
+# cd /icse23/icse23-artifact-evaluation/table2
+# bash short_run.sh
+```
+Upon completion, the script will output a csv file named `short-running.csv` under the `table2` directory.
+
+The `short-running.csv` contains the following statistic for both KLEE and GenSym:
+```
+path, line coverage, query time, solver time, execution time, whole time
+```
+With the Execution time Speedup and Whole time Speedup of GenSym over KLEE.
+
+**Long-Running Benchmark: 26 hours**
+
+We can start the long-running task which will run about 1 hour for each Coreutils program on both KLEE and GenSym. We will run 13 programs so the total running time is ~26 hours.
+
+The long-running benchmark of TABLE II reported in our paper is conducted on a machine with 4 Intel Xeon 8168 CPUs and 3TB memory.Running this benchmark on 32GB machine will result in fewer path number due to memory limit.
+
+To launch the long-running benchmark, run:
+```
+# cd /icse23/icse23-artifact-evaluation/table2
+# bash long_run.sh
+```
+Upon completion, the script will output a csv file named `long-running.csv` under the `table2` directory.
+
+The `long-running.csv` contains the following statistic for both KLEE and GenSym:
+```
+path, line coverage, query time, solver time, execution time, whole time
+```
+With the Path Throughput of GenSym over KLEE.
 
 ### RQ3
 

@@ -165,6 +165,8 @@ total_table['Exec Speedup'] = total_table['Exec Speedup'] + 'x'
 total_table['Whole Speedup'] = total_table['Whole Speedup'].astype(str)
 total_table['Whole Speedup'] = total_table['Whole Speedup'] + 'x'
 
+total_table = total_table.rename(columns={'klee-WallTime' : 'klee-WholeTime', 'gensym-WallTime' : 'gensym-WholeTime', 'klee-ExeTime' : 'klee-ExecTime', 'gensym-ExeTime' : 'gensym-ExecTime'})
+
 print(total_table)
 total_table.to_csv("short-running.csv")
 
