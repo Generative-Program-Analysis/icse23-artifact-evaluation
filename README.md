@@ -393,7 +393,7 @@ thread, around 10 minutes in our fully paralleled setting (96 physical cores):
 
     /icse23/icse23-artifact-evaluation/table5/compilation_test.py [--make-cores <cores>] prepare --no-codegen
 
-To perform all the preparation steps from scratch at once (again this is not
+To perform all the preparation steps from scratch at once (again this is *not*
 necessary for the artifact evaluation since the first step has been done), you
 may use,
 
@@ -407,7 +407,7 @@ optimizations. For each compiled application, the following information will be
 recorded,
 
 - the time generating the C++ code,
-- the size (LOC) of generated C++ code, measured by `cloc`.
+- the size (LOC) of generated C++ code, measured by `cloc`,
 - the time building the C++ code in parallel, and
 - the time executing the built application with the configuration in Table II (upper part).
 
@@ -417,7 +417,8 @@ The command we are using in this step is,
 
 The most important options include,
 
-- `--make-cores <cores>`, setting the cores used by parallel g++ compilation,
+- `--make-cores <cores>`, setting the cores used by parallel g++ compilation, defaulting
+  to use all cores,
 - `--repeat-num <num>`, setting the number of repetition for each step in the measurement,
   defaulting to 5, and
 - `--exclude <app> ...`, specifying the applications not to include in the
@@ -434,6 +435,10 @@ application for one iteration takes roughly around 200 seconds, where there are
 By the end of the benchmark, a LaTeX table will be printed on screen, containing
 the results to Table V in the paper. All reported numbers are based on the
 median of all repetitions.
+
+To fully reproduce Table V with all cores available, you may use the following command,
+
+    /icse23/icse23-artifact-evaluation/table5/compilation_test.py run
 
 ## 6. Try Your Own Programs
 
