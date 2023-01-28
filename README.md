@@ -220,8 +220,10 @@ be found in `/icse23/GenSym/benchmarks/icse23/algorithms`.
 We use the Coreutils benchmarks in the rest of experiments, including Table {II,
 III, IV, V}.
 Their LLVM IR can be found in `/icse23/GenSym/benchmarks/icse23/coreutils`.
-The C source code of Coreutils are not included in the artifact, but can
-be found publiclly at `git://git.sv.gnu.org/coreutils`.
+The C source code of Coreutils are included in the artifact under
+`/icse23/coreutils-src`.
+The `gcov`-instrumented Coreutils programs are included in the artifact under
+`/icse23/coreutils-src/obj-gcov/src`.
 The generation of Coreutils LLVM IR from their C source code is not
 part of the artifact, but can be found in a [separate document](https://github.com/Generative-Program-Analysis/coreutils-testing-instruction) we
 prepared.
@@ -329,9 +331,16 @@ speedups into a table by running:
 
 ### RQ2
 
+**Expected Time:**
+
 TODO: make sure  runMain gensym.GenerateExternal is executed first
 
-**Expected Time:**
+To compile Coreutils benchmarks with GenSym, we first need to generate the C++ code
+and the executables by running:
+```
+testOnly icse23.CompileCoreutilsPOSIX
+```
+The C++ code and executables can be found at `/icse23/GenSym/gs_gen`.
 
 table 2
 
@@ -425,7 +434,7 @@ may use,
 **Execution**
 
 After preparing the libraries, we can start the compilation benchmark. The
-benchmark script will compile each application twice, with and without
+benchmark script will compile each application twice, with and without GenSym's compile-time
 optimizations. For each compiled application, the following information will be
 recorded,
 
