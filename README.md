@@ -538,7 +538,10 @@ We provide two scripts if you are using a NUMA machine:
 # bash run_wo_opt_numa.sh   // without solver chain optimizations
 ```
 
-Then you may use the same Python script to generate the table.
+The scripts by default bind to the first NUMA node `numactl -N0 -m0`.
+You can change it by updating L96 of the scripts.
+
+After running, then you can use the same Python script to generate the table.
 
 ### RQ4 and RQ5
 
