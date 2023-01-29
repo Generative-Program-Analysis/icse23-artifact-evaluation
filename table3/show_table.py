@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 
 import sys
-
+import pandas as pd
 filename = sys.argv[1]
 
 def rq3_parallel(fn):
