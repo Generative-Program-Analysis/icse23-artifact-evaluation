@@ -564,7 +564,7 @@ been baked in to save your time; therefore it is *not* necessary to do it for th
 evaluation. To reproduce this step yourself, you may use (this may take more than 3
 hours depending on your machine),
 
-    /icse23/icse23-artifact-evaluation/table5/compilation_test.py prepare --no-build
+    /icse23/icse23-artifact-evaluation/table4/compilation_test.py prepare --no-build
 
 With the C++ code generated, the next step is to generate the executable file, which is
 *necessary* for the rest evaluation.
@@ -572,13 +572,13 @@ You should run the following command. You can specify `--make-cores <cores>` to
 limit the CPU cores consumed. This step can take about >10 hours by a single
 thread, around 10 minutes in our fully paralleled setting (96 physical cores):
 
-    /icse23/icse23-artifact-evaluation/table5/compilation_test.py [--make-cores <cores>] prepare --no-codegen
+    /icse23/icse23-artifact-evaluation/table4/compilation_test.py [--make-cores <cores>] prepare --no-codegen
 
 To perform all the preparation steps from scratch at once (again this is *not*
 necessary for the artifact evaluation since the first step has been done), you
 may use,
 
-    /icse23/icse23-artifact-evaluation/table5/compilation_test.py [--make-cores <cores>] prepare
+    /icse23/icse23-artifact-evaluation/table4/compilation_test.py [--make-cores <cores>] prepare
 
 **Execution**
 
@@ -594,7 +594,7 @@ recorded,
 
 The command we are using in this step is,
 
-    /icse23/icse23-artifact-evaluation/table5/compilation_test.py [--make-cores <cores>] run [--repeat-num <num>] [--exclude <app> ...]
+    /icse23/icse23-artifact-evaluation/table4/compilation_test.py [--make-cores <cores>] run [--repeat-num <num>] [--exclude <app> ...]
 
 The most important options include,
 
@@ -608,7 +608,7 @@ The most important options include,
 To get a quick run of this experiment just for `base32`, you may use the
 following command assuming you have a 16-core/32GB-memory machine:
 
-    /icse23/icse23-artifact-evaluation/table5/compilation_test.py --make-cores 8 run --repeat-num 1 --exclude base64 cat comm cut dirname echo expand false fold join link paste pathchk true
+    /icse23/icse23-artifact-evaluation/table4/compilation_test.py --make-cores 8 run --repeat-num 1 --exclude base64 cat comm cut dirname echo expand false fold join link paste pathchk true
 
 The numbers reported in the paper uses 96 cores in this step, and testing each
 application for one iteration takes roughly around 200 seconds, where there are
@@ -619,7 +619,7 @@ median of all repetitions.
 
 To fully reproduce Table V with all cores available, you may use the following command,
 
-    /icse23/icse23-artifact-evaluation/table5/compilation_test.py run
+    /icse23/icse23-artifact-evaluation/table4/compilation_test.py run
 
 At the end of execution, the script will print a table similar to the one in the paper.
 
