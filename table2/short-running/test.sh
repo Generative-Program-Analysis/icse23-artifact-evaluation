@@ -76,7 +76,7 @@ orders+=(paste)
 orders+=(pathchk)
 
 
-rm empty.env
+rm -rf empty.env
 
 touch empty.env
 
