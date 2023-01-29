@@ -518,6 +518,8 @@ right-hand side of Table III:
 # python3 show_table.py result_no_opt.csv
 ```
 
+We should observe higher efficiency than the result with solver optimizations.
+
 Note: `run_wo_opt.sh` by default will run each experiment for 1 times to save time,
 since each run make take +1 hour after disabling all solver-chain optimizations.
 You may want to change the `iter_num` variable in the script to a larger number for more
