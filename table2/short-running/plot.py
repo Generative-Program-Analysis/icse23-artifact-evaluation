@@ -170,25 +170,25 @@ total_table = total_table.rename(columns={'klee-WallTime' : 'klee-WholeTime', 'g
 print(total_table)
 total_table.to_csv("short-running.csv")
 
-arg_data =  [["base32",  "2", "2x2", "2"],
-             ["base64",  "2", "2x2", "2"],
-             ["cat",     "2", "-",   "2"],
-             ["comm",    "2", "2x2", "2+1"],
-             ["cut",     "2", "2x2", "2+2"],
-             ["dirname", "2", "-",   "6+10"],
-             ["echo",    "-", "-",   "2+7"],
-             ["expand",  "2", "2x2", "2"],
-             ["true",    "-", "-",   "10"],
-             ["fold",    "2", "2x2", "2"],
-             ["join",    "2", "2x2", "2+1"],
-             ["link",    "2", "2x2", "2+1+1"],
-             ["paste",   "2", "2x2", "2+1"],
-             ["pathchk", "2", "2x2", "2+2"]]
-
-arg_df = pd.DataFrame(arg_data,columns=['Program', '-sym-stdin', '-sym-files', '-sym-arg'])
-arg_df = arg_df.set_index("Program")
-tex_table = pd.concat([arg_df, total_table], axis=1)
-
-texFile = open('short-running-table.tex', 'w')
-print(tex_table.to_latex(), file = texFile)
-texFile.close()
+#arg_data =  [["base32",  "2", "2x2", "2"],
+#             ["base64",  "2", "2x2", "2"],
+#             ["cat",     "2", "-",   "2"],
+#             ["comm",    "2", "2x2", "2+1"],
+#             ["cut",     "2", "2x2", "2+2"],
+#             ["dirname", "2", "-",   "6+10"],
+#             ["echo",    "-", "-",   "2+7"],
+#             ["expand",  "2", "2x2", "2"],
+#             ["true",    "-", "-",   "10"],
+#             ["fold",    "2", "2x2", "2"],
+#             ["join",    "2", "2x2", "2+1"],
+#             ["link",    "2", "2x2", "2+1+1"],
+#             ["paste",   "2", "2x2", "2+1"],
+#             ["pathchk", "2", "2x2", "2+2"]]
+#
+#arg_df = pd.DataFrame(arg_data,columns=['Program', '-sym-stdin', '-sym-files', '-sym-arg'])
+#arg_df = arg_df.set_index("Program")
+#tex_table = pd.concat([arg_df, total_table], axis=1)
+#
+#texFile = open('short-running-table.tex', 'w')
+#print(tex_table.to_latex(), file = texFile)
+#texFile.close()

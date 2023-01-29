@@ -166,24 +166,24 @@ total_table = total_table.rename(columns={'klee-WallTime' : 'klee-WholeTime', 'g
 print(total_table)
 total_table.to_csv("long-running.csv")
 
-arg_data = [["base32",    "4",  "2x2", "4"],
-            ["base64",    "4",  "2x2", "4"],
-            ["cat",       "3",  "-",   "3"],
-            ["comm",      "3",  "2x2", "3+1"],
-            ["cut",       "3",  "2x2", "3+3"],
-            ["dirname",   "6",  "-",   "9+15"],
-            ["echo",      "-",  "-",   "4+8"],
-            ["expand",    "3",  "2x2", "3"],
-            ["fold",      "3",  "2x2", "3"],
-            ["join",      "3",  "2x2", "3+3"],
-            ["link",      "3",  "2x2", "3+3+3"],
-            ["paste",     "3",  "2x2", "3+3"],
-            ["pathchk",   "3",  "2x2", "3+3"]]
-
-arg_df = pd.DataFrame(arg_data,columns=['Program', '-sym-stdin', '-sym-files', '-sym-arg'])
-arg_df = arg_df.set_index("Program")
-tex_table = pd.concat([arg_df, total_table], axis=1)
-
-texFile = open('long-running-table.tex', 'w')
-print(tex_table.to_latex(), file = texFile)
-texFile.close()
+#arg_data = [["base32",    "4",  "2x2", "4"],
+#            ["base64",    "4",  "2x2", "4"],
+#            ["cat",       "3",  "-",   "3"],
+#            ["comm",      "3",  "2x2", "3+1"],
+#            ["cut",       "3",  "2x2", "3+3"],
+#            ["dirname",   "6",  "-",   "9+15"],
+#            ["echo",      "-",  "-",   "4+8"],
+#            ["expand",    "3",  "2x2", "3"],
+#            ["fold",      "3",  "2x2", "3"],
+#            ["join",      "3",  "2x2", "3+3"],
+#            ["link",      "3",  "2x2", "3+3+3"],
+#            ["paste",     "3",  "2x2", "3+3"],
+#            ["pathchk",   "3",  "2x2", "3+3"]]
+#
+#arg_df = pd.DataFrame(arg_data,columns=['Program', '-sym-stdin', '-sym-files', '-sym-arg'])
+#arg_df = arg_df.set_index("Program")
+#tex_table = pd.concat([arg_df, total_table], axis=1)
+#
+#texFile = open('long-running-table.tex', 'w')
+#print(tex_table.to_latex(), file = texFile)
+#texFile.close()
