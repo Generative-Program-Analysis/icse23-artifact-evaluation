@@ -12,7 +12,7 @@ def get_solver_time(row):
     i = row.get('t-solver-int')
     e = row.get('t-solver-ext')
     if i is not None and e is not None:
-        return float(i) + float(e)
+        return float(i)
     else:
         return None
 
@@ -31,9 +31,9 @@ with open('output/runtime.csv', 'r') as csvfile:
         print("-"*25*6)
 
         posix_solver = get_solver_time(posix) if posix is not None else "x"
-        posix_exec = float(posix.get('t-exec')) if posix is not None else "x"
+        posix_exec = float(posix.get('t-exec')) - posix_solver if posix is not None else "x"
         uclibc_solver = get_solver_time(uclibc) if uclibc is not None else "x"
-        uclibc_exec = float(uclibc.get('t-exec')) if uclibc is not None else "x"
+        uclibc_exec = float(uclibc.get('t-exec')) - uclibc_solver if uclibc is not None else "x"
         speedup = posix_exec / uclibc_exec if posix_exec != "x" and uclibc_exec != "x" else "x"
 
         print("| {:20} | {:20} | {:20} | {:20} | {:20} | {:20} |".format(key, posix_solver, posix_exec, uclibc_solver, uclibc_exec, speedup))
