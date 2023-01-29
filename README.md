@@ -521,7 +521,7 @@ right-hand side of Table III:
 
 Note: `run_wo_opt.sh` by default will run each experiment for 1 times to save time,
 since each run make take +1 hour after disabling all solver-chain optimizations.
-You may want to change the `iter_num` variable in the script to 5 for more
+You may want to change the `iter_num` variable in the script to a larger number for more
 statistically stable results.
 
 **NUMA Machine Instruction**
@@ -557,7 +557,9 @@ These two file systems are then used together with application code compiled by 
 ```
 This step compiles and run both the benchmarks compiled with KLEE's POSIX file
 system and our meta file system.
-Upon completion, the script will output a csv file named `runtime.csv` under the `output` directory. The full logs for both versions can also be found under the `output` directory.
+Upon completion, the script will output a csv file named `runtime.csv` under the
+`output` directory. The full logs for both versions can also be found under the
+`output` directory.
 
 **Results**
 
@@ -574,7 +576,7 @@ The ones relevant are `name`, `t-solver-ext`, `t-solver-int`, and `t-exec`.
   by the program respectively. External solver time only counts the actual SMT query time,
   whereas internal solver time also includes the time spent on the whole solver-chain (such
   as simplification and query optimizations within our engine).
-  The T_Solver field in the paper is a sum of external and internal solver time.
+  The T_Solver field in the paper corresponds to "internal solver time".
 - `t-exec` is the total execution time.
 
 Also note that the `paths` column denotes the number of paths explored, which should be the same for the POSIX file system and our meta file system.
