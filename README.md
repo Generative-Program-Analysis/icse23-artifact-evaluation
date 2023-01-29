@@ -273,7 +273,7 @@ i.e. the number of paths they explore per second (assuming that paths are homoge
 
 More specifically, the long-running configuration of Coreutils programs
 are used in the *lower part* of Table II for RQ2.
-All other experiments including the upper part of Table II, Table III, Table IV, and Table V
+All other experiments including the upper part of Table II, Table III, and Table IV
 all uses the short-running configuration.
 
 ## 5. Evaluation Instructions
@@ -549,7 +549,7 @@ After running, then you can use the same Python script to generate the table.
 
 **Expected Time: ~5 hours (in 96-core parallel)**
 
-This part of the artifact aims to answer RQ4 and RQ5 by producing Table V. By
+This part of the artifact aims to answer RQ4 and RQ5 by producing Table IV. By
 compiling the benchmarks in `/icse/GenSym/benchmarks/coreutils/separate` in both
 with and without optimizations, we are able to examine about the compilation
 cost and the effectiveness of our compile-time optimizations.
@@ -619,10 +619,10 @@ The numbers reported in the paper uses 96 cores in this step, and testing each
 application for one iteration takes roughly around 200 seconds, where there are
 15 applications available for testing.
 By the end of the benchmark, a LaTeX table will be printed on screen, containing
-the results to Table V in the paper. All reported numbers are based on the
+the results to Table IV in the paper. All reported numbers are based on the
 median of all repetitions.
 
-To fully reproduce Table V with all cores available, you may use the following command,
+To fully reproduce Table IV with all cores available, you may use the following command,
 
     /icse23/icse23-artifact-evaluation/table4/compilation_test.py run
 
