@@ -467,24 +467,23 @@ III). The experiment consists of two parts: (1) parallel execution with
 solver-chain optimizations enabled (left hand side of Table III), and (2)
 parallel execution with solver-chain optimizations disabled (right hand side of
 Table III).
-The reason behind this is that the solver-chain optimizations are repeated in
-each worker thread, leading to unfaithful characterization of the performance of
-parallel execution.
-To evaluate the performance of our continuation-based parallel execution where
-each thread has no overlapped work, we disable the solver-chain optimizations.
+The reason behind this is that the solver-chain optimizations are replicated in
+each worker thread, leading to degraded parallel execution performance.
+To evaluate the performance of our continuation-based parallel approach with
+no overlapping work among the threads, we disable the solver-chain optimizations.
 However, in a realistic scenario, the solver-chain optimizations are
 always enabled.
 
 For both parts of the experiment, we run 1/4/8/12 threads using
 the short-running configuration of Coreutils benchmarks.
 
-Before proceeding this step, please make sure that you have already compiled all
+Before proceeding with this step, please make sure that you have already compiled all
 Coreutils benchmarks with GenSym (i.e. running `testOnly
 icse23.CompileCoreutilsPOSIX` in `sbt` from RQ2).
 
 **Parallel Execution with Solver-Chain Optimizations Enabled (2 hours)**
 
-To run this experiment with solver-chain optimizations enabled:
+To run this experiment with solver-chain optimizations enabled,
 
 ```
 # cd /icse23/icse23-artifact-evaluation/table3
@@ -492,19 +491,19 @@ To run this experiment with solver-chain optimizations enabled:
 ```
 
 After the experiment finishes, you can use the following command to generate the
-left-hand side of Table III:
+left-hand side of Table III,
 
 ```
 # python3 show_table.py result_opt.csv
 ```
 
-Note: since this is a short-running experiment and with solver-chain optimizations,
-if single-thread execution is already fast enough (e.g. less than 30 seconds),
-you may not observe significant speedups using 8 or 12 threads.
+Note: since this is a short-running experiment with optimizations on,
+you may not observe significant speedups using 8 or 12 threads,
+as single-thread execution can already be fast enough (e.g. less than 30 seconds).
 
 **Parallel Execution with Solver-Chain Optimizations Disabled (20 hours+)**
 
-To run this experiment with solver-chain optimizations disabled:
+To run this experiment with solver-chain optimizations disabled,
 
 ```
 # cd /icse23/icse23-artifact-evaluation/table3
@@ -512,27 +511,27 @@ To run this experiment with solver-chain optimizations disabled:
 ```
 
 After the experiment finishes, you can use the following command to generate the
-right-hand side of Table III:
+right-hand side of Table III,
 
 ```
 # python3 show_table.py result_no_opt.csv
 ```
 
-We should observe higher efficiency than the result with solver optimizations.
+We could observe higher efficiency than that with optimizations enabled.
 
-Note: `run_wo_opt.sh` by default will run each experiment for 1 times to save time,
-since each run make take +1 hour after disabling all solver-chain optimizations.
+Note: `run_wo_opt.sh` by default will run each experiment only once to save time,
+since each run may take >1 hour after disabling all solver-chain optimizations.
 You may want to change the `iter_num` variable in the script to a larger number for more
 statistically stable results.
 
 **NUMA Machine Instruction**
 
-If you run this experiment on a NUMA (Non-uniform memory access) machine, you
-may need to use additional tools to pin the threads to a NUMA node consistently
+If you are to run this experiment on a NUMA (non-uniform memory access) machine, you
+may need to use additional tools to bind the threads to a NUMA node consistently
 during its execution.
-Otherwise, operating system scheduler may move the threads to different NUMA
-node, leading to poor performance and unfair comparison.
-We provide two scripts if you are using a NUMA machine:
+Otherwise, OS scheduler may move the threads to different NUMA
+nodes, leading to poor performance and unfaithful comparison.
+We provide two additional scripts if you are using a NUMA machine:
 
 ```
 # cd /icse23/icse23-artifact-evaluation/table3
@@ -540,20 +539,20 @@ We provide two scripts if you are using a NUMA machine:
 # bash run_wo_opt_numa.sh   // without solver chain optimizations
 ```
 
-The scripts by default bind to the first NUMA node `numactl -N0 -m0`.
+The scripts by default bind to the first NUMA node (`numactl -N0 -m0`).
 You can change it by updating L96 of the scripts.
 
-After running, then you can use the same Python script to generate the table.
+After running, you can use the same Python script to generate the table.
 
 ### RQ4 and RQ5
 
 **Expected Time: ~5 hours (in 96-core parallel)**
 
 This part of the artifact aims to answer RQ4 and RQ5 by producing Table IV. By
-compiling the benchmarks in `/icse/GenSym/benchmarks/coreutils/separate` in both
-with and without optimizations, we are able to examine about the compilation
+compiling the benchmarks in `/icse/GenSym/benchmarks/coreutils/separate` both
+with and without optimizations, we are able to examine the compilation
 cost and the effectiveness of our compile-time optimizations.
-This step is performed under separate compilation mode of GenSym: we compile the
+This step is performed under the separate compilation mode of GenSym: we process the
 POSIX/uClibc library and Coreutils benchmarks separately and then link them
 together.
 Before starting, change the directory to `GenSym`'s root folder,
@@ -562,7 +561,7 @@ Before starting, change the directory to `GenSym`'s root folder,
 
 **Preparation**
 
-Preparing libraries for separate compilation resembles the steps compiling an
+Preparing libraries for separate compilation resembles the steps compiling a
 whole-program application. First, we use GenSym to generate code in C++, and second, we
 compile the C++ code to executables. In the docker image, the first step has
 been baked in to save your time; therefore it is *not* necessary to do it for the artifact
@@ -571,7 +570,7 @@ hours depending on your machine),
 
     /icse23/icse23-artifact-evaluation/table4/compilation_test.py prepare --no-build
 
-With the C++ code generated, the next step is to generate the executable file, which is
+With the C++ code generated, the next step is to generate the executable files, which is
 *necessary* for the rest evaluation.
 You should run the following command. You can specify `--make-cores <cores>` to
 limit the CPU cores consumed. This step can take about >10 hours by a single
@@ -663,4 +662,4 @@ Each LLVM IR function corresponds to a separate C++ file.
 The compiled executable to perform the actual symbolic execution has the same
 name as the output folder. There is a number of runtime options available
 to tweak the process of symbolic execution. To see the available options,
-to see those options, run the executable with `--help` option.
+run the executable with `--help`.
