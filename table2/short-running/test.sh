@@ -12,13 +12,13 @@ declare -A program_arg
 declare -A symloc_strategy
 declare -a orders
 
-klee_bin=klee
+klee_bin=klee-11
 
 iter_num=1
 
-gs_gen_dir=/icse23/GenSym/gs_gen
+gs_gen_dir=/scratch1/gao606/GenSym/gs_gen
 
-klee_posix_dir=/icse23/GenSym/benchmarks/coreutils/klee_posix
+klee_posix_dir=/scratch1/gao606/coreutils-linked/klee_posix
 
 gs_engine=ImpCPSGS
 suffix=linked_posix
@@ -106,7 +106,7 @@ running_klee() {
     arg=${program_arg[${program}]}
     ll_name=${program}_klee.ll
     filename=klee-${program}
-    command="${klee_bin} --output-dir=$filename-${iter_index} ${klee_option} ./${ll_name} ${arg}"
+    command="numactl -N1 -m1 ${klee_bin} --output-dir=$filename-${iter_index} ${klee_option} ./${ll_name} ${arg}"
     echo "Running ${command}"
     ${command} > "$filename-${iter_index}_raw.log" 2>&1
   done
@@ -131,7 +131,7 @@ running_gs() {
     if [ ${program} = "true" ]; then
       run_gs_option=${true_gs_option}
     fi
-    command_gs="./${gs_bin} ${run_gs_option} --symloc-strategy=${sym_strategy}"
+    command_gs="numactl -N1 -m1 ./${gs_bin} ${run_gs_option} --symloc-strategy=${sym_strategy}"
     command_klee_fs="--argv=./${program}.bc   ${arg}"
     command="${command_gs} ${command_klee_fs}"
     echo "Running ${command}"

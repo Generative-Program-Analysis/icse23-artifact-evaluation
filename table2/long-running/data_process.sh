@@ -2,7 +2,7 @@
 
 declare -a orders
 
-klee_stats_bin=klee-stats
+klee_stats_bin=klee-stats-11
 
 iter_num=1
 

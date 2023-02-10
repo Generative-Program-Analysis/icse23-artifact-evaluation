@@ -37,8 +37,6 @@ for file in glob.glob("klee-*.csv"):
             info_file = open(dir+"/info", mode='r')
             content = info_file.read()
             completed_path_obj = re.search("KLEE:\s+done:\s+completed\s+paths\s+=\s+(\d+)", content)
-            if not completed_path_obj:
-                break
             partial_path_obj = re.search("KLEE:\s+done:\s+partially\s+completed\s+paths\s+=\s+(\d+)", content)
             test_num_obj = re.search("KLEE:\s+done:\s+generated\s+tests\s+=\s+(\d+)", content)
             completed_path_num = completed_path_obj.group(1)

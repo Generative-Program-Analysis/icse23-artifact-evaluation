@@ -4,7 +4,7 @@ declare -a orders
 
 gcov_dir=$1
 
-klee_replay_bin=klee-replay
+klee_replay_bin=klee-replay-11
 
 orders+=(echo)
 orders+=(cat)

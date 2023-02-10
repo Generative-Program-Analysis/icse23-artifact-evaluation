@@ -1,6 +1,6 @@
 #!/bin/bash
 
-gcov_src_dir=/icse23/coreutils-src/obj-gcov/src
+gcov_src_dir=/scratch1/gao606/coreutils-testing-pipeline/coreutils/obj-gcov/src
 
 cd short-running
 bash test.sh

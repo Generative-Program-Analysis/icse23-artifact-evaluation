@@ -1,0 +1,8 @@
+table2/short-running/klee/*
+table2/short-running/gs/*
+table2/long-running/klee/*
+table2/long-running/gs/*
+table2/long-running/*.log
+table2/short-running/*.log
+*.csv
+*.tex
